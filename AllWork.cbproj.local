@@ -7,5 +7,7 @@
     <Transaction>2021.06.04 10:41:04.433.cbproj,C:\Users\User\Documents\RAD Studio\Projects\Project1.cbproj=C:\_D\NPOL\Ballib\AllWork.cbproj</Transaction>
     <Transaction>2021.06.04 10:45:19.867.cpp,C:\_D\NPOL\Ballib\Unit1.cpp=C:\_D\NPOL\Ballib\mathematic.cpp</Transaction>
     <Transaction>2021.06.04 10:45:19.867.h,C:\_D\NPOL\Ballib\Unit1.h=C:\_D\NPOL\Ballib\mathematic.h</Transaction>
+    <Transaction>2021.06.04 15:28:10.380.cpp,C:\_D\NPOL\Ballib\Unit1.cpp=C:\_D\NPOL\Ballib\matrix.cpp</Transaction>
+    <Transaction>2021.06.04 15:28:10.380.h,C:\_D\NPOL\Ballib\Unit1.h=C:\_D\NPOL\Ballib\matrix.h</Transaction>
   </Transactions>
 </BorlandProject>
