@@ -42,7 +42,6 @@ void VectProizv (const double Vec1[3], const double Vec2[3], double proizv[3]){
 }
 //---------------------------------------------------------------------------
 //Поворот вектора dV1 вокруг оси задоваемой ортами Ort на угол хи в радианах
-
 void Povorot_Vektora(const double Ort[], const double dV1[], const double hi,double dV2[])
 {
 //////////////////////////////////////////////////////////////////////////
