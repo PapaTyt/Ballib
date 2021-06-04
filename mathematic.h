@@ -3,4 +3,13 @@
 #ifndef mathematicH
 #define mathematicH
 //---------------------------------------------------------------------------
+//функция вычисления модуля вектора задаваемого тремя координатами
+double norm(double x, double y, double z);
+//функция вычисления модуля вектора
+double norm(double r[5]);
+//функция вычисления модуля разности векторов r1 и r2
+double norm(double r1[3], double r2[3]);
+
+
+
 #endif
