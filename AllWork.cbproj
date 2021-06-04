@@ -72,6 +72,10 @@
 				<DependentOn>MainUnit.h</DependentOn>
 				<BuildOrder>2</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="mathematic.cpp">
+				<DependentOn>mathematic.h</DependentOn>
+				<BuildOrder>3</BuildOrder>
+			</CppCompile>
 			<FormResources Include="MainUnit.dfm"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
