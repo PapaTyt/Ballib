@@ -3,4 +3,22 @@
 #ifndef matrixH
 #define matrixH
 //---------------------------------------------------------------------------
+//процедура умножения матрицы A 3х3 на вектор r
+void matr_X_vect(double A[3][3], double r[3], double r1[3]);
+//процедура умножения матрицы A 3х3 на матрицу 3х3 B
+void matr_X_matr(double A[3][3], double B[3][3], double C[3][3]);
+//процедура транспонирования матрицы А 3х3
+void matr_T(const double A[3][3], double B[3][3]);
+//процедура преобразование матрицы в кватернион
+void MatrToQ(const double a[3][3], double q[4]);
+//процедура преобразования кватерниона в матрицу
+void QToMatr(const double q[4], double a[3][3]);
+//Определение матрицы поворота вокруг одной из осей СК на заданный угол
+void RotMat(int i, double a, double A[3][3]);
+
+
+
+
+
+
 #endif
