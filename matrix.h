@@ -87,6 +87,24 @@ void inversion(double A[6][6]);
 //---------------------------------------------------------------------------
 
 
+class matrix(
+
+	public:
+
+	//вектор столбец
+	std::vector<double> X;
+
+
+
+
+
+
+	//privete
+	protected:
+
+
+}:
+
 
 
 
