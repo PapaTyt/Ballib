@@ -31,7 +31,7 @@ double Skalyar(const double x1[3], const double x2[3]){
 //угол между векторами
 double angel_between_vectors(double r1[3], double r2[3]){
 double angle;
-	angle=acos(Skalyar(x, x1)/norm(x)/norm(x1));
+	angle=acos(Skalyar(r1, r2)/norm(r1)/norm(r2));
 	return angle;
 }
 //Векторное произведение векторов Vec1 и Vec2

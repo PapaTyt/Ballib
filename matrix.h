@@ -2,6 +2,8 @@
 
 #ifndef matrixH
 #define matrixH
+#include <vcl.h>
+#include <vector>
 //---------------------------------------------------------------------------
 //процедура умножения матрицы A 3х3 на вектор r
 void matr_X_vect(double A[3][3], double r[3], double r1[3]);
@@ -87,17 +89,27 @@ void inversion(double A[6][6]);
 //---------------------------------------------------------------------------
 
 
-class matrix(
-
+class matrix{
 	public:
 
 	//вектор столбец
 	std::vector<double> X;
+	//вектор строка
+	std::vector<double> Y;
 
+	//количество строк n
+	int n;
+	//количество столбцов m
+	int m;
+	//матрица nxm
+	std::vector< std::vector<double> > A;
 
-
-
-
+	void create(int n_, int m_);
+	void create_X(int n);
+	void create_Y(int n);
+	void zero_A();
+	void zero_X();
+	void zero_Y();
 
 	//privete
 	protected:
