@@ -8,3 +8,5 @@ __history/
 *.#00
 
 *.#01
+
+Debug/AllWork.pch
