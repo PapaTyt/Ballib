@@ -316,6 +316,7 @@ void matrix::create_A(int n_, int m_){
 std::vector<double> tmp;
 n=n_;
 m=m_;
+A.clear();
 for(int i=0; i<m; i++) tmp.push_back(0.0);
 for(int i=0; i<n; i++) A.push_back(0.0);
 }
@@ -324,6 +325,7 @@ for(int i=0; i<n; i++) A.push_back(0.0);
 void matrix::create_X(int n_){
 n=n_;
 m=1;
+X.clear();
 for(int i=0; i<n; i++) X.push_back(0.0);
 }
 //---------------------------------------------------------------------------
@@ -331,6 +333,7 @@ for(int i=0; i<n; i++) X.push_back(0.0);
 void matrix::create_Y(int m_){
 n=1;
 m=m_;
+Y.clear();
 for(int i=0; i<m; i++) Y.push_back(0.0);
 }
 //---------------------------------------------------------------------------
@@ -351,7 +354,6 @@ for(int i=0; i<X.size(); i++)
 //процедура обнуления вектора строки
 void matrix::zero_Y(){
 for(int i=0; i<Y.size(); i++)
-
 		Y[i]=0.0;
 }
 //---------------------------------------------------------------------------
@@ -455,4 +457,39 @@ void matrix::multiplication_X(double k){
 void matrix::multiplication_Y(double k){
 	for(int i=0; i<m; i++)
 		Y[i]=k*Y[i];		
+}
+//---------------------------------------------------------------------------
+//процедура транспонирования матрицы A=A^T
+void matrix::transposition_A(){
+std::vector< std::vector<double> > B;
+std::vector<double> temp;
+
+	for(int i=0; i<n; i++){
+		temp.clear();
+		for(int j=0; j<m; j++) {
+			temp.push_back(A[j][i]);
+		}
+	B.push_back(temp);
+	}
+int k=m;
+m=n;
+n=k;
+}
+//---------------------------------------------------------------------------
+//процедура вычитания векторов столбцов Y=X^T
+void matrix::transposition_X(){
+	Y.clear();
+	for(int i=0; i<n; i++)
+		Y[i]=X[i];	
+	m=n;
+	n=1;
+}
+//---------------------------------------------------------------------------
+//процедура вычитания векторов столбцов X=Y^T
+void matrix::transposition_Y(){
+	X.clear();
+	for(int i=0; i<m; i++)
+		X.push_back(Y[i]);
+	n=m;
+	m=1;
 }
