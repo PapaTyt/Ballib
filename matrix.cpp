@@ -5,6 +5,7 @@
 
 #include "matrix.h"
 #include "mathematic.h"
+#include "report.h"
 
 //---------------------------------------------------------------------------
 
@@ -43,6 +44,7 @@ void MatrToQ(const double a[3][3], double q[4]){
 double zn;
 q[0]=0.5*sqrt(1.+a[0][0]+a[1][1]+a[2][2]);
 zn=q[0]*4;
+if(zn==0) report(3);
 zn=1./zn;
 q[1]=(a[1][2]-a[2][1])*zn;
 q[2]=(a[2][0]-a[0][2])*zn;
@@ -93,6 +95,7 @@ switch(i){
 	default: A[0][0] = 1;  A[0][1] = 0; A[0][2] = 0;
 			 A[1][0] = 0;  A[1][1] = 1; A[1][2] = 0;
 			 A[2][0] = 0;  A[2][1] = 0; A[2][2] = 1;
+			 report(4);
 		     break;
 
 }
@@ -278,6 +281,7 @@ void inversion(double A[6][6])
 		}
 	for (int k = 0; k < N; k++){
 		temp = A[k][k];
+		if(temp==0) report(5);
 		for (int j = 0; j < N; j++){
 			A[k][j] /= temp;
             E[k][j] /= temp;
@@ -373,20 +377,29 @@ void matrix::add_A(matrix B){
 			for(int j=0; j<m; j++)
 				A[i][j]+=B.A[i][j];		
 	}
+	else {
+		report(6);
+	}
 }
 //---------------------------------------------------------------------------
 //процедура сложения векторов столбцов X=X+B.X
 void matrix::add_X(matrix B){
-	if(n==B.n){
+	if(n==B.n && B.m==1){
 		for(int i=0; i<n; i++)
 			X[i]+=B.X[i];		
+	}
+	else {
+		report(7);
 	}
 }
 //---------------------------------------------------------------------------
 //процедура сложения векторов столбцов Y=Y+B.Y
 void matrix::add_Y(matrix B){
-	if(m==B.m){
-		for(int i=0; i<n; i++)
+	if(B.n==1 && m==B.m){
+		for(int i=0; i<m; i++)
 			Y[i]+=B.Y[i];		
+	}
+	else {
+		report(8);
 	}
 }

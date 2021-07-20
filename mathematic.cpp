@@ -5,6 +5,8 @@
 #pragma hdrstop
 
 #include "mathematic.h"
+#include "report.h"
+
 
 //---------------------------------------------------------------------------
 
@@ -31,7 +33,11 @@ double Skalyar(const double x1[3], const double x2[3]){
 //угол между векторами
 double angel_between_vectors(double r1[3], double r2[3]){
 double angle;
-	angle=acos(Skalyar(r1, r2)/norm(r1)/norm(r2));
+double R1=norm(r1);
+double R2=norm(r2);
+if(R1==0) report(1);
+if(R2==0) report(2);
+	angle=acos(Skalyar(r1, r2)/R1/R2);
 	return angle;
 }
 //Векторное произведение векторов Vec1 и Vec2
