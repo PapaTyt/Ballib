@@ -29,7 +29,12 @@ switch(i){
 			  break;
 	case   8: str="Процедура matrix::add_Y. Модуль matrix.h. Не соответствие размерностей векторов строк."
 			  break;
-
+	case   9: str="Процедура matrix::minus_A. Модуль matrix.h. Не соответствие размерностей матриц."
+			  break;
+	case  10: str="Процедура matrix::minus_X. Модуль matrix.h. Не соответствие размерностей векторов столбцов."
+			  break;
+	case  11: str="Процедура matrix::minus_Y. Модуль matrix.h. Не соответствие размерностей векторов строк."
+			  break;
 
 			  
 }
