@@ -42,6 +42,8 @@ switch(i){
 	case  14: str="Процедура matrix::multiplication_X. Модуль matrix.h. Не соответствие размерностей."
 			  break;
 	case  15: str="Процедура matrix::multiplication_Y. Модуль matrix.h. Не соответствие размерностей."
+			  break;
+	case  15: str="Процедура matrix::inversion. Модуль matrix.h. Матрица не квадратная."
 			  break;		  
 }
 

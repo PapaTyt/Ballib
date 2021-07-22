@@ -582,5 +582,45 @@ else{
 	report(15);
 }
 }
+//---------------------------------------------------------------------------
+//опроцедура бращения матрицы 
+void matrix::inversion()
+{ 
+if(n==m){  
+	matrix E;
+	E.create(n,m);
+	E.diagonal_matrix();
+	double temp;
+
+	for (int k = 0; k < N; k++){
+		temp = A[k][k];
+		if(temp==0) report(5);
+		for (int j = 0; j < N; j++){
+			A[k][j] /= temp;
+			E.A[k][j] /= temp;
+		}
+		for (int i = k + 1; i < N; i++){
+			temp = A[i][k];
+			for (int j = 0; j < N; j++){
+				A[i][j] -= A[k][j] * temp;
+				E.A[i][j] -= E.A[k][j] * temp;
+			}
+		}
+	}
+	for (int k = N - 1; k > 0; k--){
+		for (int i = k - 1; i >= 0; i--){
+			temp = A[i][k];
+			for (int j = 0; j < N; j++){
+				A[i][j] -= A[k][j] * temp;
+				E.A[i][j] -= E.A[k][j] * temp;
+			}
+		}
+	}
+	A=E.A;
+}
+else{
+	report(16);
+}
+}
 
 
