@@ -476,7 +476,7 @@ m=n;
 n=k;
 }
 //---------------------------------------------------------------------------
-//процедура вычитания векторов столбцов Y=X^T
+//процедура транспонирования  векторов столбцов Y=X^T
 void matrix::transposition_X(){
 	Y.clear();
 	for(int i=0; i<n; i++)
@@ -485,7 +485,7 @@ void matrix::transposition_X(){
 	n=1;
 }
 //---------------------------------------------------------------------------
-//процедура вычитания векторов столбцов X=Y^T
+//процедура транспонирования  векторов столбцов X=Y^T
 void matrix::transposition_Y(){
 	X.clear();
 	for(int i=0; i<m; i++)
@@ -493,3 +493,94 @@ void matrix::transposition_Y(){
 	n=m;
 	m=1;
 }
+//---------------------------------------------------------------------------
+//процедура умножения матрицы на матрицу слева A=B*A
+void matrix::left_multiplication(matrix B){
+
+std::vector< std::vector<double> > C;
+std::vector<double> temp;
+double f;
+if(n==B.m){
+	C.clear();
+	for(int k=0; k<B.n; k++){
+		temp.clear();
+
+		for(int j=0; j<m; j++){
+			f=0;
+			for(int i=0; i<n; i++)
+				f+=A[k][i]*B.A[i][j];
+			temp.push_back(f);
+		}
+		C.push_back(temp);
+	}
+	A=C;		
+}
+else{
+	report(12);
+}
+}
+//---------------------------------------------------------------------------
+//процедура умножения матрицы на матрицу справа A=A*B
+void matrix::right_multiplication(matrix B){
+
+std::vector< std::vector<double> > C;
+std::vector<double> temp;
+double f;
+if(m==B.n){
+	C.clear();
+	for(int k=0; k<n; k++){
+		temp.clear();
+
+		for(int j=0; j<B.m; j++){
+			f=0;
+			for(int i=0; i<B.n; i++)
+				f+=A[k][i]*B.A[i][j];
+			temp.push_back(f);
+		}
+		C.push_back(temp);
+	}
+	A=C;		
+}
+else{
+	report(13);
+}
+}
+//---------------------------------------------------------------------------
+//процедура умножения матрицы на вектор столбец A=A*X
+void matrix::multiplication_X(matrix B){
+
+double f;
+if(m==B.n){
+	X.clear();
+	for(int k=0; k<n; k++){
+		f=0;
+		for(int i=0; i<B.n; i++)
+			f+=A[k][i]*B.X[i];
+		X.push_back(f);
+		}
+	}
+else{
+	report(14);
+}
+}
+//---------------------------------------------------------------------------
+//процедура умножения матрицы на вектор строку A=Y*A
+void matrix::multiplication_Y(matrix B){
+
+double f;
+if(B.m==n){
+	Y.clear();
+	for(int k=0; k<B.m; k++){
+		f=0;
+		for(int i=0; i<n; i++)
+			f=B.Y[i]*A[i][k];
+
+		Y.push_back(f);
+		}
+	}
+else{
+	report(15);
+}
+}
+
+

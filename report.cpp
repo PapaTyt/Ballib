@@ -35,8 +35,14 @@ switch(i){
 			  break;
 	case  11: str="Процедура matrix::minus_Y. Модуль matrix.h. Не соответствие размерностей векторов строк."
 			  break;
-
-			  
+	case  12: str="Процедура matrix::left_multiplication. Модуль matrix.h. Не соответствие размерностей матриц."
+			  break;
+	case  13: str="Процедура matrix::right_multiplication. Модуль matrix.h. Не соответствие размерностей матриц."
+			  break;
+	case  14: str="Процедура matrix::multiplication_X. Модуль matrix.h. Не соответствие размерностей."
+			  break;
+	case  15: str="Процедура matrix::multiplication_Y. Модуль matrix.h. Не соответствие размерностей."
+			  break;		  
 }
 
 
