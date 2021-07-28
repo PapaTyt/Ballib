@@ -19,6 +19,7 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<LinkPackageImports>rtl.bpi;vcl.bpi</LinkPackageImports>
 			<PackageImports>vclx.bpi;vcl.bpi;vclimg.bpi;dbrtl.bpi;Rave77VCL.bpi;bdertl.bpi;rtl.bpi;bcbie.bpi;vclactnband.bpi;xmlrtl.bpi;bcbsmp.bpi;vcldb.bpi;vcldbx.bpi;vcltouch.bpi;dsnap.bpi;dsnapcon.bpi;TeeUI.bpi;TeeDB.bpi;Tee.bpi;vclib.bpi;ibxpress.bpi;adortl.bpi;IndyCore.bpi;IndySystem.bpi;IndyProtocols.bpi;inet.bpi;intrawebdb_100_140.bpi;Intraweb_100_140.bpi;VclSmp.bpi;vclie.bpi;websnap.bpi;webdsnap.bpi;inetdb.bpi;inetdbbde.bpi;inetdbxpress.bpi;soaprtl.bpi;vclribbon.bpi;dbexpress.bpi;DbxCommonDriver.bpi;DataSnapIndy10ServerTransport.bpi;DataSnapProviderClient.bpi;DbxClientDriver.bpi;DataSnapServer.bpi;DBXInterBaseDriver.bpi;DBXMySQLDriver.bpi;dbxcds.bpi;DBXFirebirdDriver.bpi;DBXSybaseASEDriver.bpi;DBXSybaseASADriver.bpi;DBXOracleDriver.bpi;DBXMSSQLDriver.bpi;DBXInformixDriver.bpi;DBXDb2Driver.bpi</PackageImports>
 			<Multithreaded>true</Multithreaded>
 			<AllPackageLibs>rtl.lib;vcl.lib</AllPackageLibs>
@@ -60,18 +61,6 @@
 			<ILINK_TranslatedLibraryPath>$(BDS)\lib\$(LANGDIR)\release;$(ILINK_TranslatedLibraryPath)</ILINK_TranslatedLibraryPath>
 		</PropertyGroup>
 		<ItemGroup>
-			<CppCompile Include="AllWork.cpp">
-				<BuildOrder>0</BuildOrder>
-			</CppCompile>
-			<ResFiles Include="AllWork.res">
-				<ModuleName>AllWork.res</ModuleName>
-				<BuildOrder>1</BuildOrder>
-			</ResFiles>
-			<CppCompile Include="MainUnit.cpp">
-				<Form>Form1</Form>
-				<DependentOn>MainUnit.h</DependentOn>
-				<BuildOrder>2</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="mathematic.cpp">
 				<DependentOn>mathematic.h</DependentOn>
 				<BuildOrder>3</BuildOrder>
@@ -79,6 +68,34 @@
 			<CppCompile Include="matrix.cpp">
 				<DependentOn>matrix.h</DependentOn>
 				<BuildOrder>4</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="MainUnit.cpp">
+				<Form>Form1</Form>
+				<DependentOn>MainUnit.h</DependentOn>
+				<BuildOrder>2</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="AllWork.cpp">
+				<BuildOrder>0</BuildOrder>
+			</CppCompile>
+			<ResFiles Include="AllWork.res">
+				<BuildOrder>1</BuildOrder>
+			</ResFiles>
+			<None Include="constants.h">
+				<BuildOrder>5</BuildOrder>
+			</None>
+			<CppCompile Include="global.cpp">
+				<DependentOn>global.h</DependentOn>
+				<BuildOrder>6</BuildOrder>
+			</CppCompile>
+			<None Include="Ephemeris.hpp">
+				<BuildOrder>7</BuildOrder>
+			</None>
+			<None Include="Ephemeris_help.hpp">
+				<BuildOrder>8</BuildOrder>
+			</None>
+			<CppCompile Include="kepler.cpp">
+				<DependentOn>kepler.h</DependentOn>
+				<BuildOrder>9</BuildOrder>
 			</CppCompile>
 			<FormResources Include="MainUnit.dfm"/>
 			<BuildConfiguration Include="Base">

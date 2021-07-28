@@ -10,3 +10,19 @@ __history/
 *.#01
 
 Debug/AllWork.pch
+
+Debug/AllWork.exe
+
+Debug/AllWork.ilc
+
+Debug/AllWork.ild
+
+Debug/AllWork.ilf
+
+Debug/AllWork.ils
+
+Debug/AllWork.map
+
+Debug/AllWork.tds
+
+AllWork.cbproj.local
