@@ -61,41 +61,45 @@
 			<ILINK_TranslatedLibraryPath>$(BDS)\lib\$(LANGDIR)\release;$(ILINK_TranslatedLibraryPath)</ILINK_TranslatedLibraryPath>
 		</PropertyGroup>
 		<ItemGroup>
-			<CppCompile Include="mathematic.cpp">
-				<DependentOn>mathematic.h</DependentOn>
-				<BuildOrder>3</BuildOrder>
+			<None Include="Ephemeris_help.hpp">
+				<BuildOrder>8</BuildOrder>
+			</None>
+			<None Include="Ephemeris.hpp">
+				<BuildOrder>7</BuildOrder>
+			</None>
+			<CppCompile Include="global.cpp">
+				<DependentOn>global.h</DependentOn>
+				<BuildOrder>6</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="matrix.cpp">
-				<DependentOn>matrix.h</DependentOn>
-				<BuildOrder>4</BuildOrder>
+			<CppCompile Include="time.cpp">
+				<DependentOn>time.h</DependentOn>
+				<BuildOrder>11</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="kepler.cpp">
+				<DependentOn>kepler.h</DependentOn>
+				<BuildOrder>9</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="MainUnit.cpp">
 				<Form>Form1</Form>
 				<DependentOn>MainUnit.h</DependentOn>
 				<BuildOrder>2</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="AllWork.cpp">
-				<BuildOrder>0</BuildOrder>
+			<CppCompile Include="matrix.cpp">
+				<DependentOn>matrix.h</DependentOn>
+				<BuildOrder>4</BuildOrder>
 			</CppCompile>
-			<ResFiles Include="AllWork.res">
-				<BuildOrder>1</BuildOrder>
-			</ResFiles>
+			<CppCompile Include="mathematic.cpp">
+				<DependentOn>mathematic.h</DependentOn>
+				<BuildOrder>3</BuildOrder>
+			</CppCompile>
 			<None Include="constants.h">
 				<BuildOrder>5</BuildOrder>
 			</None>
-			<CppCompile Include="global.cpp">
-				<DependentOn>global.h</DependentOn>
-				<BuildOrder>6</BuildOrder>
-			</CppCompile>
-			<None Include="Ephemeris.hpp">
-				<BuildOrder>7</BuildOrder>
-			</None>
-			<None Include="Ephemeris_help.hpp">
-				<BuildOrder>8</BuildOrder>
-			</None>
-			<CppCompile Include="kepler.cpp">
-				<DependentOn>kepler.h</DependentOn>
-				<BuildOrder>9</BuildOrder>
+			<ResFiles Include="AllWork.res">
+				<BuildOrder>1</BuildOrder>
+			</ResFiles>
+			<CppCompile Include="AllWork.cpp">
+				<BuildOrder>0</BuildOrder>
 			</CppCompile>
 			<FormResources Include="MainUnit.dfm"/>
 			<BuildConfiguration Include="Base">
