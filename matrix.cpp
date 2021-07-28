@@ -2,7 +2,7 @@
 
 
 #pragma hdrstop
-
+#include <math.h>
 #include "matrix.h"
 #include "mathematic.h"
 #include "report.h"
@@ -318,7 +318,7 @@ n=n_;
 m=m_;
 A.clear();
 for(int i=0; i<m; i++) tmp.push_back(0.0);
-for(int i=0; i<n; i++) A.push_back(0.0);
+for(int i=0; i<n; i++) A.push_back(tmp);
 }
 //---------------------------------------------------------------------------
 //процедура инициализации вектора столбца
@@ -374,7 +374,7 @@ for(int i=0; i<n; i++)
 //---------------------------------------------------------------------------
 //процедура сложения матриц A=A+B.A
 void matrix::add_A(matrix B){
-	if(n==B.n && m=B.m){
+	if(n==B.n && m==B.m){
 		for(int i=0; i<n; i++)
 			for(int j=0; j<m; j++)
 				A[i][j]+=B.A[i][j];		
@@ -408,7 +408,7 @@ void matrix::add_Y(matrix B){
 //---------------------------------------------------------------------------
 //процедура вычитания матриц A=A-B.A
 void matrix::minus_A(matrix B){
-	if(n==B.n && m=B.m){
+	if(n==B.n && m==B.m){
 		for(int i=0; i<n; i++)
 			for(int j=0; j<m; j++)
 				A[i][j]-=B.A[i][j];		
@@ -588,29 +588,29 @@ void matrix::inversion()
 { 
 if(n==m){  
 	matrix E;
-	E.create(n,m);
+	E.create_A(n,m);
 	E.diagonal_matrix();
 	double temp;
 
-	for (int k = 0; k < N; k++){
+	for (int k = 0; k < n; k++){
 		temp = A[k][k];
 		if(temp==0) report(5);
-		for (int j = 0; j < N; j++){
+		for (int j = 0; j < n; j++){
 			A[k][j] /= temp;
 			E.A[k][j] /= temp;
 		}
-		for (int i = k + 1; i < N; i++){
+		for (int i = k + 1; i < n; i++){
 			temp = A[i][k];
-			for (int j = 0; j < N; j++){
+			for (int j = 0; j < n; j++){
 				A[i][j] -= A[k][j] * temp;
 				E.A[i][j] -= E.A[k][j] * temp;
 			}
 		}
 	}
-	for (int k = N - 1; k > 0; k--){
+	for (int k = n - 1; k > 0; k--){
 		for (int i = k - 1; i >= 0; i--){
 			temp = A[i][k];
-			for (int j = 0; j < N; j++){
+			for (int j = 0; j < n; j++){
 				A[i][j] -= A[k][j] * temp;
 				E.A[i][j] -= E.A[k][j] * temp;
 			}
