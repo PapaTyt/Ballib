@@ -3,13 +3,13 @@
 #ifndef globalH
 #define globalH
 //---------------------------------------------------------------------------
-#include "Ephemeris.hpp"
-extern dph::EphemerisRelease de405("JPLEPH");
+//#include "Ephemeris.hpp"
+//extern dph::EphemerisRelease de405("JPLEPH");
 
 extern double R_Earth = 6378.136;                  // Экв. радиус Земли (км)
 extern double R_Sun   = 695980.0;                  // радиус Солнца (км)
 extern double R_Moon  = 1738.57;                   // радиус Луны (км)
-extern double mu3     = 398600.4415;               // гравитационная постоянная Земли
+extern double mu     = 398600.4415;               // гравитационная постоянная Земли
 extern double mum     = 4902.79914;                // гравитационная постоянная Луны
 extern double mus     = 0.132712439935E12;         // гравитационная постоянная Солнца
 
