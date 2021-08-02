@@ -28,3 +28,13 @@ Debug/dephem.obj
 Debug/global.obj
 
 Debug/MainUnit.obj
+
+Debug/AllWork.#01
+
+Debug/mathematic.obj
+
+Debug/report.obj
+
+*.obj
+
+__history/

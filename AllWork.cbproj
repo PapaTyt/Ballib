@@ -84,6 +84,22 @@
 				<DependentOn>global.h</DependentOn>
 				<BuildOrder>5</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="mathematic.cpp">
+				<DependentOn>mathematic.h</DependentOn>
+				<BuildOrder>6</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="report.cpp">
+				<DependentOn>report.h</DependentOn>
+				<BuildOrder>7</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="matrix.cpp">
+				<DependentOn>matrix.h</DependentOn>
+				<BuildOrder>8</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="time_convert.cpp">
+				<DependentOn>time_convert.h</DependentOn>
+				<BuildOrder>9</BuildOrder>
+			</CppCompile>
 			<FormResources Include="MainUnit.dfm"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>

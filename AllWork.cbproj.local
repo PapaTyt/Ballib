@@ -6,5 +6,12 @@
     <Transaction>2021.08.02 15:37:38.553.dfm,C:\Users\User\Documents\RAD Studio\Projects\Unit1.dfm=C:\_D\NPOL\Ballib\MainUnit.dfm</Transaction>
     <Transaction>2021.08.02 15:37:50.173.cbproj,C:\Users\User\Documents\RAD Studio\Projects\Project1.cbproj=C:\_D\NPOL\Ballib\AllWork.cbproj</Transaction>
     <Transaction>2021.08.02 15:51:12.094.cbproj,C:\_D\NPOL\Ballib\AllWork.cbproj=C:\_D\NPOL\Ballib\AllWork.cbproj</Transaction>
+    <Transaction>2021.08.02 16:20:08.566.cpp,C:\_D\NPOL\Ballib\time.cpp=</Transaction>
+    <Transaction>2021.08.02 16:23:50.422.cpp,C:\_D\NPOL\Ballib\time.cpp=</Transaction>
+    <Transaction>2021.08.02 16:24:35.455.cpp,C:\_D\NPOL\Ballib\Unit1.cpp=C:\_D\NPOL\Ballib\time.cpp</Transaction>
+    <Transaction>2021.08.02 16:24:35.455.h,C:\_D\NPOL\Ballib\Unit1.h=C:\_D\NPOL\Ballib\time.h</Transaction>
+    <Transaction>2021.08.02 16:37:38.387.cpp,C:\_D\NPOL\Ballib\time.cpp=</Transaction>
+    <Transaction>2021.08.02 16:39:10.225.cpp,C:\_D\NPOL\Ballib\Unit1.cpp=C:\_D\NPOL\Ballib\time_convert.cpp</Transaction>
+    <Transaction>2021.08.02 16:39:10.225.h,C:\_D\NPOL\Ballib\Unit1.h=C:\_D\NPOL\Ballib\time_convert.h</Transaction>
   </Transactions>
 </BorlandProject>
