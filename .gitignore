@@ -1,15 +1,9 @@
 
-*.~1~
+*.~21~
 
-__history/
+__history/AllWork.cpp.~11~
 
-*.obj
-
-*.#00
-
-*.#01
-
-Debug/AllWork.pch
+Debug/AllWork.#00
 
 Debug/AllWork.exe
 
@@ -23,6 +17,14 @@ Debug/AllWork.ils
 
 Debug/AllWork.map
 
+Debug/AllWork.obj
+
+Debug/AllWork.pch
+
 Debug/AllWork.tds
 
-AllWork.cbproj.local
+Debug/dephem.obj
+
+Debug/global.obj
+
+Debug/MainUnit.obj
