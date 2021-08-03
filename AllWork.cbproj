@@ -104,6 +104,10 @@
 				<DependentOn>coordinate_system.h</DependentOn>
 				<BuildOrder>10</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="integration.cpp">
+				<DependentOn>integration.h</DependentOn>
+				<BuildOrder>11</BuildOrder>
+			</CppCompile>
 			<FormResources Include="MainUnit.dfm"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
