@@ -124,8 +124,8 @@ void dph::EphemerisRelease::calculateBody(unsigned calculationResult,
      *  Допустимые значения параметров
      *
      *  calculationResult:
-     *		1 - Получить значение радиус-вектора,
-     *		2 - Получить значение вектора состояния
+	 *		0 - Получить значение радиус-вектора,
+     *		1 - Получить значение вектора состояния
      *
      *   targetBody, centerBody:
      *      1  – Меркурий;
