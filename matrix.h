@@ -121,7 +121,7 @@ class matrix{
 	void matrix::zero_X();
 	//---------------------------------------------------------------------------
 	//процедура обнуления матрицы nxm
-	void matrix::zero_A();
+	void matrix::zero_Y();
 	//---------------------------------------------------------------------------
 	//процедура инициализации диагональной матрицы
 	void diagonal_matrix();
@@ -180,10 +180,10 @@ class matrix{
 	void matrix::inversion();
 
 	//privete
-	protected:
+	//protected:
 
 
-}:
+};
 
 
 

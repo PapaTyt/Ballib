@@ -1,6 +1,6 @@
 ﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
-			<ProjectGuid>{DFF89ACD-95FB-4C76-AF9B-C2576CF4E433}</ProjectGuid>
+			<ProjectGuid>{F387018E-F2EB-4015-A20A-73E7B9F44296}</ProjectGuid>
 			<ProjectVersion>12.0</ProjectVersion>
 			<MainSource>AllWork.cpp</MainSource>
 			<Config Condition="'$(Config)'==''">Debug</Config>
@@ -19,10 +19,11 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
-			<PackageImports>vclx.bpi;vcl.bpi;vclimg.bpi;dbrtl.bpi;Rave77VCL.bpi;bdertl.bpi;rtl.bpi;bcbie.bpi;vclactnband.bpi;xmlrtl.bpi;bcbsmp.bpi;vcldb.bpi;vcldbx.bpi;vcltouch.bpi;dsnap.bpi;dsnapcon.bpi;TeeUI.bpi;TeeDB.bpi;Tee.bpi;vclib.bpi;ibxpress.bpi;adortl.bpi;IndyCore.bpi;IndySystem.bpi;IndyProtocols.bpi;inet.bpi;intrawebdb_100_140.bpi;Intraweb_100_140.bpi;VclSmp.bpi;vclie.bpi;websnap.bpi;webdsnap.bpi;inetdb.bpi;inetdbbde.bpi;inetdbxpress.bpi;soaprtl.bpi;vclribbon.bpi;dbexpress.bpi;DbxCommonDriver.bpi;DataSnapIndy10ServerTransport.bpi;DataSnapProviderClient.bpi;DbxClientDriver.bpi;DataSnapServer.bpi;DBXInterBaseDriver.bpi;DBXMySQLDriver.bpi;dbxcds.bpi;DBXFirebirdDriver.bpi;DBXSybaseASEDriver.bpi;DBXSybaseASADriver.bpi;DBXOracleDriver.bpi;DBXMSSQLDriver.bpi;DBXInformixDriver.bpi;DBXDb2Driver.bpi</PackageImports>
+			<LinkPackageImports>rtl.bpi;vcl.bpi</LinkPackageImports>
 			<Multithreaded>true</Multithreaded>
-			<AllPackageLibs>rtl.lib;vcl.lib</AllPackageLibs>
 			<ProjectType>CppVCLApplication</ProjectType>
+			<PackageImports>vclx.bpi;vcl.bpi;vclimg.bpi;dbrtl.bpi;Rave77VCL.bpi;bdertl.bpi;rtl.bpi;bcbie.bpi;vclactnband.bpi;xmlrtl.bpi;bcbsmp.bpi;vcldb.bpi;vcldbx.bpi;vcltouch.bpi;dsnap.bpi;dsnapcon.bpi;TeeUI.bpi;TeeDB.bpi;Tee.bpi;vclib.bpi;ibxpress.bpi;adortl.bpi;IndyCore.bpi;IndySystem.bpi;IndyProtocols.bpi;inet.bpi;intrawebdb_100_140.bpi;Intraweb_100_140.bpi;VclSmp.bpi;vclie.bpi;websnap.bpi;webdsnap.bpi;inetdb.bpi;inetdbbde.bpi;inetdbxpress.bpi;soaprtl.bpi;vclribbon.bpi;dbexpress.bpi;DbxCommonDriver.bpi;DataSnapIndy10ServerTransport.bpi;DataSnapProviderClient.bpi;DbxClientDriver.bpi;DataSnapServer.bpi;DBXInterBaseDriver.bpi;DBXMySQLDriver.bpi;dbxcds.bpi;DBXFirebirdDriver.bpi;DBXSybaseASEDriver.bpi;DBXSybaseASADriver.bpi;DBXOracleDriver.bpi;DBXMSSQLDriver.bpi;DBXInformixDriver.bpi;DBXDb2Driver.bpi</PackageImports>
+			<AllPackageLibs>rtl.lib;vcl.lib</AllPackageLibs>
 			<DCC_CBuilderOutput>JPHNE</DCC_CBuilderOutput>
 			<DynamicRTL>true</DynamicRTL>
 			<UsePackages>true</UsePackages>
@@ -72,13 +73,36 @@
 				<DependentOn>MainUnit.h</DependentOn>
 				<BuildOrder>2</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="dephem.cpp">
+				<DependentOn>dephem.h</DependentOn>
+				<BuildOrder>3</BuildOrder>
+			</CppCompile>
+			<None Include="constants.h">
+				<BuildOrder>4</BuildOrder>
+			</None>
+			<CppCompile Include="global.cpp">
+				<DependentOn>global.h</DependentOn>
+				<BuildOrder>5</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="mathematic.cpp">
 				<DependentOn>mathematic.h</DependentOn>
-				<BuildOrder>3</BuildOrder>
+				<BuildOrder>6</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="report.cpp">
+				<DependentOn>report.h</DependentOn>
+				<BuildOrder>7</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="matrix.cpp">
 				<DependentOn>matrix.h</DependentOn>
-				<BuildOrder>4</BuildOrder>
+				<BuildOrder>8</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="time_convert.cpp">
+				<DependentOn>time_convert.h</DependentOn>
+				<BuildOrder>9</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="coordinate_system.cpp">
+				<DependentOn>coordinate_system.h</DependentOn>
+				<BuildOrder>10</BuildOrder>
 			</CppCompile>
 			<FormResources Include="MainUnit.dfm"/>
 			<BuildConfiguration Include="Base">
