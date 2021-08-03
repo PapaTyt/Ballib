@@ -105,8 +105,8 @@ void dph::EphemerisRelease::open(const std::string& binaryFilePath)
 
 /* Радиус-вектор (или вектор состояния) одного тела относительно другого. */
 void dph::EphemerisRelease::calculateBody(unsigned calculationResult,
-    unsigned targetBody, unsigned centerBody, double JED,
-    double* resultArray) const
+	unsigned targetBody, unsigned centerBody, double JED,
+	double* resultArray) const
 {
     /*
      *  Параметры:
@@ -303,6 +303,20 @@ void dph::EphemerisRelease::calculateBody(unsigned calculationResult,
         }
     }
 }
+
+/* Радиус-вектор (или вектор состояния) одного тела относительно другого. */
+void calculate(unsigned targetBody, unsigned centerBody,
+					double JED, double r[3], double v[3]) const
+{
+double rv[6];
+calculateBody(2, targetBody, centerBody, JED, rv);
+for(int i=0; i<3; i++){
+	r[i]=rv[i];
+	v[i]=rv[i+3];
+}
+}
+
+
 
 /* Значение одного из дополнительных элементов, хранящихся в выпуске DE. */
 void dph::EphemerisRelease::calculateOther(unsigned calculationResult,

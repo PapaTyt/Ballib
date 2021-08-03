@@ -119,7 +119,11 @@ public:
     void calculateBody(unsigned calculationResult, unsigned targetBody,
         unsigned centerBody, double JED, double* resultArray) const;
 
-    /* Значение одного из дополнительных элементов, хранящихся в выпуске DE. */
+	/* Радиус-вектор (или вектор состояния) одного тела относительно другого. */
+	void calculate(unsigned targetBody, unsigned centerBody,
+		double JED, double r[3], double v[3]) const;
+
+	/* Значение одного из дополнительных элементов, хранящихся в выпуске DE. */
     void calculateOther(unsigned calculationResult, unsigned otherItem,
         double JED, double* resultArray) const;
 
