@@ -100,6 +100,10 @@
 				<DependentOn>time_convert.h</DependentOn>
 				<BuildOrder>9</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="coordinate_system.cpp">
+				<DependentOn>coordinate_system.h</DependentOn>
+				<BuildOrder>10</BuildOrder>
+			</CppCompile>
 			<FormResources Include="MainUnit.dfm"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>

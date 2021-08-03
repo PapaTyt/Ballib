@@ -303,9 +303,16 @@ void dph::EphemerisRelease::calculateBody(unsigned calculationResult,
         }
     }
 }
-
 /* Радиус-вектор (или вектор состояния) одного тела относительно другого. */
-void calculate(unsigned targetBody, unsigned centerBody,
+void dph::EphemerisRelease::calculateR(unsigned targetBody, unsigned centerBody,
+					double JED, double r[3]) const
+{
+
+calculateBody(1, targetBody, centerBody, JED, r);
+
+}
+/* Радиус-вектор (или вектор состояния) одного тела относительно другого. */
+void dph::EphemerisRelease::calculateRV(unsigned targetBody, unsigned centerBody,
 					double JED, double r[3], double v[3]) const
 {
 double rv[6];

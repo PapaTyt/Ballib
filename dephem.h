@@ -120,7 +120,10 @@ public:
         unsigned centerBody, double JED, double* resultArray) const;
 
 	/* Радиус-вектор (или вектор состояния) одного тела относительно другого. */
-	void calculate(unsigned targetBody, unsigned centerBody,
+	void calculateR(unsigned targetBody, unsigned centerBody,
+		double JED, double r[3]) const;
+    /* Радиус-вектор (или вектор состояния) одного тела относительно другого. */
+	void calculateRV(unsigned targetBody, unsigned centerBody,
 		double JED, double r[3], double v[3]) const;
 
 	/* Значение одного из дополнительных элементов, хранящихся в выпуске DE. */
