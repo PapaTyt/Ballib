@@ -80,8 +80,28 @@ step=step_;
 
 /*вычисление правых частей ДУ*/
 void rightPart(VECTOR &rv){
+/*
+	 *  Параметры:
+	 *   rv – структура типа VECTOR (вектор состояния и матрицы)
+	 *
+	 *  Примечания:
+	 *    – 
+
+	 *  Допустимые значения параметров
+	 *
+	 *   calculeteMatrix:
+	 *		0 - расчет только возмущающих ускорений,
+	 *		1 - расчет только возмущающих ускорений и 
+				матрицы частных производных
+	 *
+	 *   centralBody:
+	 *		B_EARTH - 0 – Земля;
+	 *		B_MOON  - 1 – Луна;
+	 *		B_SUN   - 2 – Солнце;
+	 */
 
 
+/*обнуление векторов ускорений*/
 for(int i=0; i<3; i++){
 	a_central_field[i]=0;
 	a_off_central_field[i]=0;
@@ -92,20 +112,20 @@ for(int i=0; i<3; i++){
 }
 
 
-
+/*вычисление ускорений*/
 switch(centralBody){
-	case B_EARTH:	if(rp[0]) central_field(rv);
-					if(rp[1]) off_central_field(rv);
-					if(rp[2]) celestial_bodies(rv);
-					if(rp[3]) solar_radiation(rv);
-					if(rp[4]) atmosphere(rv);
-					if(rp[5]) traction(rv);
+	case B_EARTH:	if(rp[0]) central_field(rv);      	//центральное поле
+					if(rp[1]) off_central_field(rv);    //нецентральность 
+					if(rp[2]) celestial_bodies(rv);     //небесные тела
+					if(rp[3]) solar_radiation(rv);      //солнечное излучение 
+					if(rp[4]) atmosphere(rv);           //атмосфера
+					if(rp[5]) traction(rv);             //тяга ДУ
 					break;
 
 
-	case B_MOON: 	if(rp[0]) central_field_moon(VECTOR rv);
-					if(rp[1]) off_central_field_moon(VECTOR rv);
-					if(rp[2]) celestial_bodies_moon(VECTOR rv);
+	case B_MOON: 	if(rp[0]) central_field_moon(VECTOR rv);       //центральное поле
+					if(rp[1]) off_central_field_moon(VECTOR rv);   //нецентральность 
+					if(rp[2]) celestial_bodies_moon(VECTOR rv);    //небесные тела
 					break;
 
 
@@ -113,6 +133,7 @@ switch(centralBody){
 
 }
 
+/*суммирование расчитаных значений возмущающих ускорений*/
 for (int i=0; i<3; i++){
 	rv.f[i] = a_central_fild[i]+
 			  a_off_central_fild[i]+
@@ -122,25 +143,166 @@ for (int i=0; i<3; i++){
 			  a_traction[i];
 }
 
+/*расчет матрицы частных производных*/
 if(calculeteMatrix){
 
-for(int i=0; i<6; i++)
-	for(int j=0; j<6; j++)
-		rv.dfdx[i][j]=0;
+	/*обнуление матрицы*/
+	for(int i=0; i<6; i++)
+		for(int j=0; j<6; j++)
+			rv.dfdx[i][j]=0;
+			
+	/*задание единичных элементов*/
+	rv.dfdx[0][3]=1;
+	rv.dfdx[1][4]=1;
+	rv.dfdx[2][5]=1;
 
-rv.dfdx[0][3]=1;
-rv.dfdx[1][4]=1;
-rv.dfdx[2][5]=1;
+	/*задание элементов матрицы из матрицы изохронных производных*/
+	for(int i=0; i<3; i++)
+		for(int j=0; j<3; j++)
+			rv.dfdx[i+3][j]=df_central_fiеld[i][j]+
+					   df_off_central_fiеld[i][j]+
+					   df_celestial_bodies[i][j];
 
-for(int i=0; i<3; i++)
-	for(int j=0; j<3; j++)
-		rv.dfdx[i+3][j]=df_central_fild[i][j]+
-				   df_off_central_fild[i][j]+
-				   df_celestial_bodies[i][j];
+	matr_X_matr(rv.dfdx, rv.F, rv.F_);
+}
+}
+
+/*вычисление возмущающего ускорения, обусловленного центральным
+  гавитационным полем Земли и матрицы частных производных этого вектора*/
+void central_field(VECTOR rv){
+/*
+	 *  Параметры:
+	 *   rv – структура типа VECTOR (вектор состояния и матрицы)
+	 *
+	 *  Примечания:
+	 *    – 
+
+	 *  Допустимые значения параметров
+	 *
+	 *   calculeteMatrix:
+	 *		0 - расчет только возмущающих ускорений,
+	 *		1 - расчет только возмущающих ускорений и 
+				матрицы частных производных
+	 *
+
+	 */
+
+/*вычисление модуля радиус-вектора, второй и третей степени */
+double R=norm(rv.r);
+double R2=R*R;
+double R3=R2*R;
+
+/*вычисление возмущающего ускорения, обусловленного центральным
+  гавитационным полем Земли*/
+for (int k=0; k<3; k++)
+	a_central_fiеld[k] =  - mu*rv.r[k]/R3;
+
+/*вычисление матрица частных производных вектора гравитационных возмущений 
+  центрального тела по вектору положения*/
+if(calculeteMatrix){  
+	for(int i=0;i<3;i++){
+		for(int j=0; j<3;j++)
+			df_central_field[i][j]=rv.r[i]*rv.r[j]/R2;
+	}
+	for(int i=0; i<3; i++)  df_central_fild[i][i]-=1./3.;
+	for(int i=0; i<3;i++){
+		for(int j=0; j<3; j++)
+			df_central_field[i][j]*=3*mu/R3;
+	}
+}
+}
+
+/*вычисление возмущающего ускорения, обусловленного центральным
+  гавитационным полем Луны и матрицы частных производных этого вектора*/
+void central_field_moon(VECTOR rv){
+/*
+	 *  Параметры:
+	 *   rv – структура типа VECTOR (вектор состояния и матрицы)
+	 *
+	 *  Примечания:
+	 *    – 
+
+	 *  Допустимые значения параметров
+	 *
+	 *   calculeteMatrix:
+	 *		0 - расчет только возмущающих ускорений,
+	 *		1 - расчет только возмущающих ускорений и 
+				матрицы частных производных
+	 *
+
+	 */
+
+/*вычисление модуля радиус-вектора, второй и третей степени */
+double R=norm(rv.r);
+double R2=R*R;
+double R3=R2*R;
+
+/*вычисление возмущающего ускорения, обусловленного центральным
+  гавитационным полем Земли*/
+for (int k=0; k<3; k++)
+	a_central_fiеld[k] =  - mum*rv.r[k]/R3;
+
+/*вычисление матрица частных производных вектора гравитационных возмущений 
+  центрального тела по вектору положения*/
+if(calculeteMatrix){  
+	for(int i=0;i<3;i++){
+		for(int j=0; j<3;j++)
+			df_central_field[i][j]=rv.r[i]*rv.r[j]/R2;
+	}
+	for(int i=0; i<3; i++)  df_central_fild[i][i]-=1./3.;
+	for(int i=0; i<3;i++){
+		for(int j=0; j<3; j++)
+			df_central_field[i][j]*=3*mum/R3;
+	}
+}
+}
+
+/*вычисление возмущающего ускорения обусловленного нецентральностью
+  гравитационного поля Земли и матрицы частных производных этого вектора*/
+void off_central_field(VECTOR rv){
+/*
+	 *  Параметры:
+	 *   rv – структура типа VECTOR (вектор состояния и матрицы)
+	 *
+	 *  Примечания:
+	 *    – 
+
+	 *  Допустимые значения параметров
+	 *
+	 *   calculeteMatrix:
+	 *		0 - расчет только возмущающих ускорений,
+	 *		1 - расчет только возмущающих ускорений и 
+				матрицы частных производных
+	 *
+
+	 */
 
 
-matr_X_matr(rv.dfdx, rv.F, rv.F_);
 
+if(HarmonicsOrder==0) off_central_fild_C20(rv);
+else off_central_fild_32(rv);
+
+VECTOR temp;
+temp=rv;
+
+double df[3];
+double delta=0.01;
+
+for(int i=0; i<3; i++){
+
+	temp=rv;
+	temp.r[i]+=delta;
+	off_central_fild_32(temp,df);
+
+	for(int j=0; j<3; j++) df_off_central_fild[i][j]=df[j];
+
+	temp=rv;
+	temp.r[i]-=delta;
+	off_central_fild_32(temp,df);
+
+	for(int j=0; j<3; j++) df_off_central_fild[i][j]-=df[j];
+
+	for(int j=0; j<3; j++) df_off_central_fild[i][j]/=2*delta;
 
 }
 
@@ -148,22 +310,7 @@ matr_X_matr(rv.dfdx, rv.F, rv.F_);
 
 
 
-
-
-
 }
-
-	/*вычисление возмущающего ускорения, обусловленного центральным
-	  гавитационным полем Земли и матрицы частных производных этого вектора*/
-	void central_field(VECTOR rv);
-
-	/*вычисление возмущающего ускорения, обусловленного центральным
-	  гавитационным полем Луны и матрицы частных производных этого вектора*/
-	void central_field_moon(VECTOR rv);
-
-	/*вычисление возмущающего ускорения обусловленного нецентральностью
-	  гравитационного поля Земли и матрицы частных производных этого вектора*/
-	void off_central_field(VECTOR rv);
 
 	/*вычисление возмущающего ускорения обусловленного нецентральностью
 	  гравитационного поля Луны и матрицы частных производных этого вектора*/
