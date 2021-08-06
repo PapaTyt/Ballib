@@ -79,7 +79,7 @@ step=step_;
 	/* [ВЫЧИСЛЕНИЕ ПРАВЫХ ЧАСТЕЙ] */
 
 /*вычисление правых частей ДУ*/
-void rightPart(VECTOR &rv){
+void chi::integration::rightPart(VECTOR &rv){
 /*
 	 *  Параметры:
 	 *   rv – структура типа VECTOR (вектор состояния и матрицы)
@@ -169,7 +169,7 @@ if(calculeteMatrix){
 
 /*вычисление возмущающего ускорения, обусловленного центральным
   гавитационным полем Земли и матрицы частных производных этого вектора*/
-void central_field(VECTOR rv){
+void chi::integration::central_field(VECTOR rv){
 /*
 	 *  Параметры:
 	 *   rv – структура типа VECTOR (вектор состояния и матрицы)
@@ -214,7 +214,7 @@ if(calculeteMatrix){
 
 /*вычисление возмущающего ускорения, обусловленного центральным
   гавитационным полем Луны и матрицы частных производных этого вектора*/
-void central_field_moon(VECTOR rv){
+void chi::integration::central_field_moon(VECTOR rv){
 /*
 	 *  Параметры:
 	 *   rv – структура типа VECTOR (вектор состояния и матрицы)
@@ -259,7 +259,61 @@ if(calculeteMatrix){
 
 /*вычисление возмущающего ускорения обусловленного нецентральностью
   гравитационного поля Земли и матрицы частных производных этого вектора*/
-void off_central_field(VECTOR rv){
+void chi::integration::off_central_field(VECTOR rv){
+/*
+	 *  Параметры:
+	 *   rv – структура типа VECTOR (вектор состояния и матрицы)
+	 *
+	 *  Примечания:
+	 *    – 
+
+	 *  Допустимые значения параметров
+	 *
+	 *   harmonicType:
+	 *		C20 - 0 - вычисление по формулам второй зональной гармоники
+	 *		C40 - 1 - вычисление по формулам четвертой зональной гармоники
+	 *		H32	- 2 - вычисление разложения до порядка 32х32    
+	 *
+	 *   calculeteMatrix:
+	 *		0 - расчет только возмущающих ускорений,
+	 *		1 - расчет только возмущающих ускорений и 
+				матрицы частных производных
+	 *
+
+	 */
+
+double df[3]={0};
+
+switch(harmonicType){
+	case C20: off_central_field_C20(rv);
+			  break;
+	case C40: off_central_field_C40(rv);
+			  break;
+	case H32: off_central_field_32(rv, df);
+			  if(calculeteMatrix){
+				  double delta=0.001;
+				  VECTOR temp;  
+				  for(int i=0; i<3; i++) {
+					  temp=rv;
+					  temp.r[i]+=delta
+					  off_central_field_32(rv, df);
+					  for(int j=0; j<3; j++) df_off_central_field[i][j]=df[j];
+					  temp=rv;
+					  temp.r[i]-=delta
+					  off_central_field_32(rv, df);
+					  for(int j=0; j<3; j++) df_off_central_field[i][j]-=df[j];
+					  for(int j=0; j<3; j++) df_off_central_fild[i][j]/=2*delta;
+				  }
+
+			  }
+			  break;
+
+}
+}
+
+/*вычисление возмущающего ускорения обусловленного нецентральностью
+  гравитационного поля Луны и матрицы частных производных этого вектора*/
+void chi::integration::off_central_field_moon(VECTOR rv){
 /*
 	 *  Параметры:
 	 *   rv – структура типа VECTOR (вектор состояния и матрицы)
@@ -277,86 +331,95 @@ void off_central_field(VECTOR rv){
 
 	 */
 
+double df[3]={0};
 
+off_central_field_75_moon(rv, df);
 
-if(HarmonicsOrder==0) off_central_fild_C20(rv);
-else off_central_fild_32(rv);
-
-VECTOR temp;
-temp=rv;
-
-double df[3];
-double delta=0.01;
-
-for(int i=0; i<3; i++){
-
-	temp=rv;
-	temp.r[i]+=delta;
-	off_central_fild_32(temp,df);
-
-	for(int j=0; j<3; j++) df_off_central_fild[i][j]=df[j];
-
-	temp=rv;
-	temp.r[i]-=delta;
-	off_central_fild_32(temp,df);
-
-	for(int j=0; j<3; j++) df_off_central_fild[i][j]-=df[j];
-
-	for(int j=0; j<3; j++) df_off_central_fild[i][j]/=2*delta;
-
+if(calculeteMatrix){
+	double delta=0.001;
+	VECTOR temp;  
+	for(int i=0; i<3; i++) {
+		  temp=rv;
+		  temp.r[i]+=delta
+		  off_central_field_75_moon(rv, df);
+		  for(int j=0; j<3; j++) df_off_central_field[i][j]=df[j];
+		  temp=rv;
+		  temp.r[i]-=delta
+		  off_central_field_32(rv, df);
+		  for(int j=0; j<3; j++) df_off_central_field[i][j]-=df[j];
+		  for(int j=0; j<3; j++) df_off_central_fild[i][j]/=2*delta;
+	}
+}
 }
 
 
+/*вычисление возмущающего ускорения обусловленного нецентральностью
+  гравитационного поля Земли(второй зональной гармоникой - С20)*/
+void chi::integration::off_central_field_C20(VECTOR rv){
+/*
+	 *  Параметры:
+	 *   rv – структура типа VECTOR (вектор состояния и матрицы)
+	 *
+	 *  Примечания:
+	 *    – 
+	 *
+	 */
+
+/*вычисление модуля радиус-вектора его квадрата и пятой степени*/
+double R=norm(rv.r);
+double R2=R*R;
+double R5=R2*R2*R;
+/*рассчитанный коэффициент*/
+double b2=17599253992.788798202843556774502;
+
+/*вычисление ускорения обусловленно второй зональной гармоники*/
+a_off_central_fild[0]=3*b2*rv.r[0]*(5*rv.r[2]*rv.r[2]/R2-1)/2/R5;
+a_off_central_fild[1]=3*b2*rv.r[1]*(5*rv.r[2]*rv.r[2]/R2-1)/2/R5;
+a_off_central_fild[2]=3*b2*rv.r[2]*(5*rv.r[2]*rv.r[2]/R2-3)/2/R5;
+
+
+
 
 
 
 }
-
-	/*вычисление возмущающего ускорения обусловленного нецентральностью
-	  гравитационного поля Луны и матрицы частных производных этого вектора*/
-	void off_central_field_moon(VECTOR rv);
-
-
-	/*вычисление возмущающего ускорения обусловленного нецентральностью
-	  гравитационного поля Земли(второй зональной гармоникой - С20)*/
-	void off_central_field_C20(VECTOR rv);
-
+	
 	/*вычисление возмущающего ускорения обусловленного нецентральностью
 	  гравитационного поля Земли(второй зональной гармоникой - С40)*/
-	void off_central_field_C40(VECTOR rv);
+	void chi::integration::off_central_field_C40(VECTOR rv);
 
 
 	/*вычисление возмущающего ускорения обусловленного нецентральностью
 	  гравитационного поля Земли с учетом гармоник до 32х32 и матрицы частных
 	  производных этого вектора*/
-	void off_central_field_32(VECTOR rv, double df[3]);
+	void chi::integration::off_central_field_32(VECTOR rv, double df[3]);
 
 	/*вычисление возмущающего ускорения обусловленного нецентральностью
 	  гравитационного поля Луны с учетом гармоник до 75х75 и матрицы частных
 	  производных этого вектора*/
-	void off_central_field_75_moon(VECTOR rv, double df[3]);
+	void chi::integration::off_central_field_75_moon(VECTOR rv, double df[3]);
 
 	/*вычисление ускорения обусловленных действием небесных тел
 	  (реализация для 10 небесных тел, центральное тело Земля) и матрицы частных
 	  производных этого вектора*/
-	void celestial_bodies(VECTOR rv);
+	void chi::integration::celestial_bodies(VECTOR rv);
 
     /*вычисление ускорения обусловленных действием небесных тел
 	  (реализация для 10 небесных тел, центральное тело Луна) и матрицы частных
 	  производных этого вектора*/
-	void celestial_bodies_moon(VECTOR rv);
+	void chi::integration::celestial_bodies_moon(VECTOR rv);
 
 	/*вычисление ускорения обусловленного действием солнечного излучения и
 	  матрицы частных производных этого вектора*/
-	void solar_radiation(VECTOR rv);
+	void chi::integration::solar_radiation(VECTOR rv);
 
 	/*вычисление ускорения обусловленного воздействием силы сопротивления
 	  атмосферы в соответствии с ГОСТ Р 25645.166-2004*/
-	void atmosphere(VECTOR rv);
+	void chi::integration::atmosphere(VECTOR rv);
 
 	/*вычисление ускорения обусловленного воздействием силы сопротивления
 	  атмосферы в соответствии с ГОСТ Р 25645.166-2004*/
-	void atmosphereGOST2004(VECTOR rv);
+	void chi::integration::atmosphereGOST2004(VECTOR rv);
 
 	/*вычисление ускорения обусловленного работой двигательной установки*/
-	void traction(VECTOR rv);
+	void chi::integration::traction(VECTOR rv);
