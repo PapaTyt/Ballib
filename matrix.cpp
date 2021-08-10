@@ -583,7 +583,7 @@ void matrix::inversion()
 if(n==m){  
 	matrix E;
 	E.create_A(n,m);
-	E.diagonal_matrix();
+	E.identity_matrix();
 	double temp;
 
 	for (int k = 0; k < n; k++){
