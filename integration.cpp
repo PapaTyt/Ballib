@@ -242,7 +242,7 @@ double R3=R2*R;
 for (int k=0; k<3; k++)
 	a_central_fiеld[k] =  - mum*rv.r[k]/R3;
 
-/*вычисление матрица частных производных вектора гравитационных возмущений 
+/*вычисление матрицы частных производных вектора гравитационных возмущений 
   центрального тела по вектору положения*/
 if(calculeteMatrix){  
 	for(int i=0;i<3;i++){
@@ -290,6 +290,9 @@ switch(harmonicType){
 	case C40: off_central_field_C40(rv);
 			  break;
 	case H32: off_central_field_32(rv, a_off_central_fild);
+			  /*вычисление матрицы частных производных вектора гравитационных 
+				возмущений нецентральностьи гравитационного поля тела по 
+				вектору положения*/
 			  if(calculeteMatrix){
 				  double delta=0.001;
 				  VECTOR temp;  
@@ -334,7 +337,8 @@ void chi::integration::off_central_field_moon(VECTOR rv){
 double df[3]={0};
 
 off_central_field_75_moon(rv, df);
-
+/*вычисление матрицы частных производных вектора гравитационных возмущений 
+  нецентральностьи гравитационного поля тела по вектору положения*/
 if(calculeteMatrix){
 	double delta=0.001;
 	VECTOR temp;  
@@ -386,7 +390,8 @@ a_off_central_fild[0]=3*b2*rv.r[0]*(5*rv.r[2]*rv.r[2]/R2-1)/2/R5;
 a_off_central_fild[1]=3*b2*rv.r[1]*(5*rv.r[2]*rv.r[2]/R2-1)/2/R5;
 a_off_central_fild[2]=3*b2*rv.r[2]*(5*rv.r[2]*rv.r[2]/R2-3)/2/R5;
 
-
+/*вычисление матрицы частных производных вектора гравитационных возмущений
+  нецентральностьи гравитационного поля тела по вектору положения*/
 if(calculeteMatrix){
 	double e[3];
 	for(int i=0; i<3; i++) e[i]=rv.r[i]/R;
@@ -616,9 +621,9 @@ double dV[33][33][3]={0};
 double r[3]={0};
 double v[3]={0};
 double df_G_gr[3]={0};
-double R=norm(rv.r);
-double R2=R*R;
-double t=t_nu+rv.t/86400.;
+double R=norm(rv.r);        /*вычисление модуля радиус-вектора*/
+double R2=R*R;              /*вычисление квадрата модуля радиус-вектора */
+double t=t_nu+rv.t/86400.;  /*формирование времени в формате UTC*/
 double RZi;
 double zero[3]={0};
 
@@ -627,7 +632,7 @@ double zero[3]={0};
 if(harmonicOrder<=32 && harmonicOrder>=2) nm=harmonicOrder+1;
 else nm=33;
 
-// переход в Гринвича
+/*Перевод вектора состояния в Селенографическую СК*/
 SCtoSG(rv.r, rv.v, t,r, v);
 
 /*определяются нулевые элементы*/
@@ -699,14 +704,98 @@ for (int k=0; k<3; k++) {
 	}
 
 }
-//переход обратно в 2ЭСК
+//переход обратно в Селеноцентрическую СК
 SGtoSC(df_G_gr, zero, t, df, zero);
 }
 
-	/*вычисление ускорения обусловленных действием небесных тел
-	  (реализация для 10 небесных тел, центральное тело Земля) и матрицы частных
-	  производных этого вектора*/
-	void chi::integration::celestial_bodies(VECTOR rv);
+/*вычисление ускорения обусловленных действием небесных тел
+  (реализация для 10 небесных тел, центральное тело Земля) и матрицы частных
+  производных этого вектора*/
+void chi::integration::celestial_bodies(VECTOR rv){
+
+
+unsigned centerBody=dph::B_EARTH; 	/*определяем центральное тело Земля - 3 */
+unsigned targetBody;              	/*текущее небесное тело*/
+double t=t_nu+rv.t/86400.;  		/*формирование времени в формате UTC*/
+double r_planet[3];
+double r_ka_planet[3];
+double r[3]
+double R_planet;
+double R_planet3;
+double R_ka_planet;
+double R_ka_planet2;
+double R_ka_planet3;
+double a_planet[11][3];
+double df_planet[11][3][3];
+
+
+for(int j=0; j<11; j++){
+	if(planet[j]){
+		/*определение текущего небесного тела*/
+		targetBody=j+1;
+		/*исключаем случай центрального небесного тела*/ 
+		if(targetBody==centerBody) {j++; targetBody++;}  
+		/*определение координат текущего небесного тела*/	
+		de405.calculateR(targetBody, centerBody, t, r_planet);
+		/*определение расстояния до текущего небесного тела от центрального*/
+		R_planet=norm(r_planet); 
+		/*определение расстояния до текущего небесного тела от центрального*/
+		R_planet3=R_planet*R_planet*R_planet;  
+		/*определение вектора с аппарата на текущее небесное тело*/
+		for(int i=0; i<3; i++) 
+			r_ka_planet[i]=r_planet[i]-rv.r[i];
+		/*определение расстояния от аппарата до текущего небесного тела	*/
+		R_ka_planet=norm(r_ka_planet); 
+		/*определение квадрата расстояния от аппарата до текущего небесного тела*/
+		R_ka_planet2=R_ka_planet*R_ka_planet;   
+		/*определение куба расстояния от аппарата до текущего небесного тела*/
+		R_ka_planet3=R_ka_planet2*R_ka_planet;    
+		//определяем масив векторов ускорений обусловленных влиянием небесных тел
+		for(int i=0; i<3; i++)
+			a_planet[j][i]=mu_planet[j]*(r_ka_planet[i]/R_ka_planet3-r_planet[i]/R_planet3);
+
+		/*вычисление матрицы частных производных вектора гравитационных 
+		  возмущений небесных тел по вектору положения*/
+		if(calculeteMatrix){
+			
+			/*вычисление вектора планета-КА*/
+			for(int i=0; i<3; i++) r[i]=-r_ka_planet[i];
+			/*вычисление первого слогаемого матрицы*/
+			for(int i=0;i<3;i++){
+				for(int k=0; k<3;k++)
+					df_planet[j][i][k]=r[i]*r[k]/R_ka_planet2;
+			}
+			/*вычисление второго слогаемого матрицы*/
+			for(int i=0; i<3; i++)  df_planet[j][i][i]-=1./3.;
+			/*домноежение элементов матрицы на коэффициент*/
+			for(int i=0; i<3;i++){
+				for(int k=0; k<3; k++)
+					df_planet[j][i][k]*=3*mu_planet[j]/R_ka_planet3;
+			}
+		}
+	}
+}
+
+/*определяем результирующее ускорение от всех небесных тел кроме центрального*/
+for(int i=0; i<3; i++){
+	a_celestial_bodies[i]=0;
+	for(int j=0; j<11; j++)
+		a_celestial_bodies[i]+=a_planet[j][i];
+}
+
+/*вычисление матрицы частных производных вектора гравитационных 
+  возмущений небесных тел по вектору положения*/
+if(calculeteMatrix){
+	for(int i=0; i<3; i++){
+		for(int j=0; j<3; j++){
+			df_celestial_bodies[i][j]=0;
+			for(int k=0; k<11; k++){
+				df_celestial_bodies[i][j]+=df_planet[k][i][j];
+			}
+		}
+	}
+}
+}
 
     /*вычисление ускорения обусловленных действием небесных тел
 	  (реализация для 10 небесных тел, центральное тело Луна) и матрицы частных
