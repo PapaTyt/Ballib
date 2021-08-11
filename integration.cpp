@@ -1024,3 +1024,82 @@ while(rv.t+dt<=tk){
 
 
 }
+
+/*Метод Рунге-Кутты 4-го порядка для обыкновенных дифференциальных уравнений
+  2-го порядка*/
+void chi::integration::RK4_ODE2()
+{
+
+double dt=1;      /*шаг интегрирования не более одной секунды	*/
+bool end=false; //флаг окончания расчета
+double tk=interval*86400.;  /*вычисление интервала интегрирования*/
+VECTOR temp;
+
+/*коэффициенты интегрирования*/
+double 	k1[3]={0},
+		k2[3]={0},
+		k3[3]={0},
+		k4[3]={0};
+
+
+/*присваиваивание текущим НУ начальных НУ*/
+rv=rv_nu;
+
+
+//call_function();
+
+while(rv.t+dt<tk)
+{
+/*цикл интегрирования*/
+
+	/*вычисление k1*/
+	rightPart(rv);
+	for(int i=0; i<3; i++) k1[i]=rv.f[i]*dt;
+
+	/*вычисление k2*/
+	temp.t=rv.t+dt/2.;
+	for (int i=0; i<3; i++) {
+		temp.r[i] = rv.r[i]+ rv.v[i]*dt/2.;
+		temp.v[i]= rv.v[i]+k1[i]/2.;
+	}
+	rightPart(temp);
+	for (int i=0;i<3;i++) k2[i]=temp.f[i]*dt;
+
+	/*вычисление k3*/
+	temp.t=rv_time.t+dt/2.;
+	for (int i=0; i<3; i++) {
+		temp.r[i] = rv.r[i]+ rv.v[i]*dt/2.+k1[i]*dt/4.;
+		temp.v[i]= rv.v[i]+k2[i]/2.;
+	}
+	rightPart(temp);
+	for (int i=0;i<3;i++) k3[i]=temp.f[i]*dt;
+
+	/*вычисление k4*/
+	temp.t=rv_time.t+dt;
+	for (int i=0; i<3; i++) {
+		temp.r[i] = rv.r[i]+ rv.v[i]*dt+k2[i]*dt/2.;
+		temp.v[i]= rv.v[i]+k3[i];
+	}
+	rightPart(temp);
+	for (int i=0;i<3;i++) k4[i]=temp.f[i]*dt;
+
+	/*вычисление следующей точки*/
+	for (int i=0;i<3;i++){
+		temp.r[i] =  rv.r[i]+rv_time.v[i]*dt+((k1[i]+k2[i]+k3[i])*dt)/6.;
+		temp.v[i] = rv.v[i]+((k1[i]+2.*k2[i]+2.*k3[i]+k4[i]))/6.;
+	}
+	temp.t=rv.t+dt;
+	rv=temp;
+
+	//если при след. шаге выйдем за интервал, то посл. шаг делаем ровно до tk
+	if ((rv.t+dt>tk) && !end){
+		dt=tk-rv.t;
+		end = true; //флаг окончания интегрирования
+	}
+	//call_function();
+
+ }
+
+
+
+}
