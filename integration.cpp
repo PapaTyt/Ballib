@@ -27,9 +27,10 @@ void chi::integration::set_NU(double r[3], double v[3], double t){
 				  Юлианской даты (UTC)
 	 */
 for(int i=0; i<3; i++){
-	r_nu[i]=r[i];
-	v_nu[i]=v[i];
+	rv_nu.r[i]=r[i];
+	rv_nu.v[i]=v[i];
 }
+rv.t=0;
 t_nu=t;
 }
 void chi::integration::set_NU(double rv[6],double t){
@@ -938,4 +939,88 @@ if(calculeteMatrix){
 
 	/*вычисление ускорения обусловленного работой двигательной установки*/
 	void chi::integration::traction(VECTOR rv){
-    }
+	}
+
+
+
+
+void chi::integration::RK4_ODE1()
+{
+
+double dt=1;      /*шаг интегрирования не более одной секунды	*/
+bool end=false; //флаг окончания расчета
+double tk=interval*86400.; //интервал интегрирования
+
+/*коэффициенты интегрирования*/ 
+double 	k1[3]={0},
+		k2[3]={0},
+		k3[3]={0},
+		k4[3]={0};
+/*коэффициенты интегрирования*/		
+double  v1[3]={0},
+		v2[3]={0},
+		v3[3]={0},
+		v4[3]={0};
+VECTOR temp;
+/*присваиваивание текущим НУ начальных НУ*/
+VECTOR rv=rv_nu;
+
+
+while(rv.t+dt<=tk){
+/*цикл интегрирования*/
+
+	/*вычисление k1*/
+	rightPart(rv);
+	for(int i=0; i<3; i++) k1[i]=rv.f[i]*dt;
+	for(int i=0; i<3; i++) v1[i]=rv.v[i]*dt;
+
+
+	/*вычисление k2*/
+	temp.t=rv.t+dt/2.;
+	for (int i=0; i<3; i++) {
+		temp.r[i] = rv.r[i]+ v1[i]/2.;
+		temp.v[i]= rv.v[i]+k1[i]/2.;
+	}
+	rightPart(temp);
+	for (int i=0;i<3;i++) k2[i]=temp.f[i]*dt;
+	for (int i=0;i<3;i++) v2[i]=temp.v[i]*dt;
+
+
+	/*вычисление k3*/
+	temp.t=rv.t+dt/2.;
+	for (int i=0; i<3; i++) {
+		temp.r[i] = rv.r[i]+ v2[i]/2.;
+		temp.v[i]= rv.v[i]+k2[i]/2.;
+	}
+	rightPart(temp);
+	for (int i=0;i<3;i++) k3[i]=temp.f[i]*dt;
+	for (int i=0;i<3;i++) v3[i]=temp.v[i]*dt;
+
+	/*вычисление k4*/
+	temp.t=rv.t+dt;
+	for (int i=0; i<3; i++) {
+		temp.r[i] = rv.r[i]+ v3[i];
+		temp.v[i]= rv.v[i]+k3[i];
+	}
+	rightPart(temp);
+	for (int i=0;i<3;i++) k4[i]=temp.f[i]*dt;
+	for (int i=0;i<3;i++) v4[i]=temp.v[i]*dt;
+	/*вычисление следующей точки*/
+	for (int i=0;i<3;i++){
+		temp.r[i] =  rv.r[i]+((v1[i]+2.*v2[i]+2.*v3[i]+v4[i]))/6.;
+		temp.v[i] = rv.v[i]+((k1[i]+2.*k2[i]+2.*k3[i]+k4[i]))/6.;
+	}
+	temp.t=rv.t+dt;
+	rv=temp; 
+
+
+	//если при след. шаге выйдем за интервал, то посл. шаг делаем ровно до tk
+	if ((rv.t+dt>tk) && !end){
+		dt=tk-rv.t;
+		end = true; //флаг окончания интегрирования
+	}
+}
+
+
+
+}
