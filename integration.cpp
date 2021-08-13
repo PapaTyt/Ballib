@@ -30,7 +30,7 @@ for(int i=0; i<3; i++){
 	rv_nu.r[i]=r[i];
 	rv_nu.v[i]=v[i];
 }
-rv.t=0;
+rv_nu.t=0;
 t_nu=t;
 }
 void chi::integration::set_NU(double rv[6],double t){
@@ -41,8 +41,8 @@ void chi::integration::set_NU(double rv[6],double t){
 				  ёлианской даты (UTC)
 	 */
 for(int i=0; i<3; i++){
-	r_nu[i]=rv[i];
-	v_nu[i]=rv[i+3];
+	rv_nu.r[i]=rv[i];
+	rv_nu.v[i]=rv[i+3];
 }
 t_nu=t;
 }
@@ -1034,6 +1034,7 @@ double dt=1;      /*шаг интегрировани€ не более одной секунды	*/
 bool end=false; //флаг окончани€ расчета
 double tk=interval*86400.;  /*вычисление интервала интегрировани€*/
 VECTOR temp;
+VECTOR rv;
 
 /*коэффициенты интегрировани€*/
 double 	k1[3]={0},
@@ -1066,7 +1067,7 @@ while(rv.t+dt<tk)
 	for (int i=0;i<3;i++) k2[i]=temp.f[i]*dt;
 
 	/*вычисление k3*/
-	temp.t=rv_time.t+dt/2.;
+	temp.t=rv.t+dt/2.;
 	for (int i=0; i<3; i++) {
 		temp.r[i] = rv.r[i]+ rv.v[i]*dt/2.+k1[i]*dt/4.;
 		temp.v[i]= rv.v[i]+k2[i]/2.;
@@ -1075,7 +1076,7 @@ while(rv.t+dt<tk)
 	for (int i=0;i<3;i++) k3[i]=temp.f[i]*dt;
 
 	/*вычисление k4*/
-	temp.t=rv_time.t+dt;
+	temp.t=rv.t+dt;
 	for (int i=0; i<3; i++) {
 		temp.r[i] = rv.r[i]+ rv.v[i]*dt+k2[i]*dt/2.;
 		temp.v[i]= rv.v[i]+k3[i];
@@ -1085,7 +1086,7 @@ while(rv.t+dt<tk)
 
 	/*вычисление следующей точки*/
 	for (int i=0;i<3;i++){
-		temp.r[i] =  rv.r[i]+rv_time.v[i]*dt+((k1[i]+k2[i]+k3[i])*dt)/6.;
+		temp.r[i] =  rv.r[i]+rv.v[i]*dt+((k1[i]+k2[i]+k3[i])*dt)/6.;
 		temp.v[i] = rv.v[i]+((k1[i]+2.*k2[i]+2.*k3[i]+k4[i]))/6.;
 	}
 	temp.t=rv.t+dt;
@@ -1102,4 +1103,103 @@ while(rv.t+dt<tk)
 
 
 
+}
+
+/*ћетод ƒормана-ѕринса 7-го пор€дка*/
+void chi::integration::DP7(){
+
+bool end=false;
+bool end_step=false;
+double t=0;
+double tk=interval*86400.;
+double t_step=step;
+double DT=0;
+double sum;
+double TE, TEmax, TOL=1e-8, TOLmax=1e-10;
+VECTOR rv[7];
+VECTOR temp;
+VECTOR rv_next;
+VECTOR rv_next_cap;
+rv[0]=rv_nu;
+rv[0].t=0;
+
+while(t+dt<=tk){
+
+
+	if(t+dt>=t_step || (t+dt>=tk)) { DT=dt; dt=t_step-t;end_step=true;}
+	//считаем по 12 штук f[13][6] дл€ x y z Vx Vy Vz
+	rightPart(rv[0]);
+
+	for(int i=1; i<=6; i++){
+		for(int j=0; j<3; j++){
+			sum=0;
+			for(int m=0; m<=i-1; m++)
+				sum+=(dp5_beta[i][m]*rv[m].v[j]);
+			rv[i].r[j] = rv[0].r[j]+dt*sum;
+
+			sum=0;
+			for(int m=0; m<=i-1; m++)
+				sum+=(dp5_beta[i][m]*rv[m].f[j]);
+			rv[i].v[j] = rv[0].v[j]+dt*sum;
+
+
+		}
+		rv[i].t=rv[0].t+dp5_alpha[i]*dt;
+		rightPart(rv[i]);
+	}
+
+	//Ќаходим x y z Vx Vy Vz на след шаге и их же с шапкой
+
+	for(int i=0; i<3; i++){
+		sum = 0;
+		for (int j=0; j<=6; j++)
+			sum += (dp5_ce[j]*rv[j].v[i]);
+		rv_next.r[i]=rv[0].r[i] + dt*sum;
+
+		sum = 0;
+		for (int j=0; j<=6; j++)
+			sum += (dp5_ce[j]*rv[j].f[i]);
+		rv_next.v[i]=rv[0].v[i] + dt*sum;
+	}
+
+	for(int i=0; i<3; i++){
+		sum = 0;
+		for (int j=0; j<=6; j++)
+			sum += (dp5_ce_cap[j]*rv[j].v[i]);
+		rv_next_cap.r[i]=rv[0].r[i] + dt*sum;
+
+		sum = 0;
+		for (int j=0; j<=6; j++)
+			sum += (dp5_ce_cap[j]*rv[j].f[i]);
+		rv_next_cap.v[i]=rv[0].v[i] + dt*sum;
+	}
+	//определ€ем контрольный член - главный член погрешности на одном шаге
+	TE = norm(rv_next.r, rv_next_cap.r);
+	//если эта погрешность выходит за интервал, то мен€ем размер шага, иначе шагаем дальше
+	if (TE<TOLmax && !end && !end_step){
+		dt *= 1.4;
+	}
+	else {
+		if (TE>TOL && !end && !end_step){
+			dt *= 0.7;
+		}
+		else{
+			t+=dt;
+			rv_next.t=t;
+			rv[0]=rv_next;
+			if(end_step) {
+				t_step+=step;
+				dt=DT;
+				end_step=false;
+			}
+			//шагаем по времени
+		}
+	}
+	//если при след. шаге выйдем за интервал, то посл. шаг делаем ровно до tk
+	if ((t+dt>tk) && !end){
+		dt=tk-t;
+		end = true; //флаг окончани€ интегрировани€
+	}
+
+}
 }
