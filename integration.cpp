@@ -1,5 +1,6 @@
 //---------------------------------------------------------------------------
 #include <math.h>
+#include <stdio.h>
 
 #pragma hdrstop
 
@@ -10,6 +11,7 @@
 #include "constants.h"
 #include "mathematic.h"
 #include "integration.h"
+#include "time_convert.h"
 #include "coordinate_system.h"
 
 //---------------------------------------------------------------------------
@@ -59,7 +61,29 @@ void chi::integration::setParametrs(double interval_, double step_){
 interval=interval_;
 step=step_;
 }
+/*запись параметров интегрирования*/
+void chi::integration::setParametrs(){
+rp[0]=true;
+rp[1]=true;
+rp[2]=true;
+rp[3]=false;
+rp[4]=false;
+centralBody=B_EARTH;
+harmonicOrder=8;
+planet[0]=true;
+planet[1]=true;
+planet[2]=true;
+planet[3]=true;
+planet[4]=true;
+planet[5]=true;
+planet[6]=true;
+planet[7]=true;
+planet[8]=false;
+planet[9]=true;
+planet[10]=true;
+calculeteMatrix=0;
 
+}
 
 
 
@@ -748,8 +772,8 @@ double R_planet3;
 double R_ka_planet;
 double R_ka_planet2;
 double R_ka_planet3;
-double a_planet[11][3];
-double df_planet[11][3][3];
+double a_planet[11][3]={0};
+double df_planet[11][3][3]={0};
 
 
 for(int j=0; j<11; j++){
@@ -1219,6 +1243,9 @@ VECTOR tmp;
 //------------------
 //отчистка всех флагов до начала интегрирования
 //CleanFlag();
+RV[0]=rv_nu;
+RV[0].t=0;
+
 /*установка начального внутреннего шага интегрирования.
 По умолчанию равен 1с в дальнейшем алгоритм сам подберет его в зависимости
 от точности. Выбор начального внутреннего шага в 1с предпочтителен так как
@@ -1263,9 +1290,10 @@ while(!end){
 		}
 		else{
 			//вычисляем все шаги выдачи которые укладываются в интервал 0 и 2 точками
-			while(fabs(RV[6].t)<=fabs(t) && fabs(t)<=fabs(RV[7].t) && !end){
+			while(fabs(RV[0].t)<=fabs(t) && fabs(t)<=fabs(RV[1].t) && !end){
 				//апроксимируем на заданный момент времени
-				rv_time=RV[6];
+				rv_time=RV[0];
+				dt_step=t-RV[0].t;
 				Extrapolation(rv_time);
 				//выполняем необходимые действия на шаге
 				if(stepCalculation()) end=true;
@@ -1300,11 +1328,11 @@ while(!end){
 		для интегрирования методом Адамса-Башфорта-Мултона 8-го порядка */
 void chi::integration::Iteracii_ABM8(){
 VECTOR temp;
-double t;
+dt_step=dt;
 //Начальные условия
 rightPart(RV[0]);
 //Вычисление значений на следующем шаге
-	for (int k=0; k<6; k++){
+	for (int k=0; k<7; k++){
 		temp=RV[k];
 		Extrapolation(temp);
 		rightPart(temp);
@@ -1435,8 +1463,8 @@ n[3]=6;
 //проверяем не превышаетли начальный шаг H=1с. интервал интегрирования
 ///////////////////////////////////
 //if(STEP<H) {H=STEP; fl=true;}
-if(dt<0) H=-H;
-if(fabs(dt)<=fabs(H)) H=dt/10.;
+if(dt_step<0) H=-H;
+if(fabs(dt_step)<=fabs(H)) H=dt_step/10.;
 ////////////////////////////////
 //начинаем цикл по признаку END - интегрирование в пределах интервала STEP
 while (!END){
@@ -1522,9 +1550,9 @@ while (!END){
 				//вычисляем новое значение для следующего шага
 				H=0.94*H*pow((0.65*eps/NN),1./(2.*k-1));
 				//проверяем условие не выхода за интервал интегрирования на следующем шаге
-				if(fabs(t0+dt-t)<=fabs(H)) {
+				if(fabs(t0+dt_step-t)<=fabs(H)) {
 					//Вычисляем шаг до конца интервала инитегрирования
-					H=t0+dt-t;
+					H=t0+dt_step-t;
 					//формируем признана на рассчет последнего шага на интервале STEP
 					fl=true;
 				}
@@ -1537,4 +1565,59 @@ while (!END){
 //переприсваиваем время!
 rv0.t=t;
 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*запись типа вычислений на каждом шаге интегрирования*/
+void chi::integration::setTypeCalculation(typeCalculation_){
+ typeCalculation=typeCalculation_;
+}
+
+
+
+bool chi::integration::stepCalculation(){
+
+bool call;
+
+switch(typeCalculation){
+	case 0: call=printSteate();
+			break;
+}
+return call;
+}
+
+bool chi::integration::printSteate(){
+FILE *ff;
+AnsiString str=JDToStr(t_nu+rv_time.t/86400, 1);
+ff=fopen("1.txt", "a");
+fprintf(ff, "",
+		str,
+		rv_time.r[0], rv_time.r[0], rv_time.r[0],
+		rv_time.v[0], rv_time.v[0], rv_time.v[0]);
+fclose(ff);
 }

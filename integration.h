@@ -46,7 +46,7 @@ public:
 
 	/*запись параметров интегрирования*/
 	void setParametrs(double interval_, double step_);
-
+    void setParametrs();
 	/*запись типа вычислений на каждом шаге интегрирования*/
 	void setTypeCalculation(typeCalculation_);
 
@@ -116,7 +116,7 @@ protected:
 	unsigned calculeteMatrix; /*признак расчета матрицы частных производных*/
 
 
-	unsigned rp[5];	/*признак учета возмущений:
+	bool rp[5];		/*признак учета возмущений:
 					  rp[0] - учет центрального гравитационного поля
 					  rp[1] - учет нецентральности гравитационного поля
 					  rp[2] - учет небесных тел Солнечной системы
@@ -126,6 +126,9 @@ protected:
 
 	/*Настройка типа вычислений на каждом шаге интегрирования*/
 	unsigned typeCalculation;
+
+	bool stepCalculation();
+	bool printSteate();
 	/* [ВЫЧИСЛЕНИЯ НА КАЖДОМ ШАГЕ ИНТЕГРИРОВАНИЯ] */
 
 
@@ -235,6 +238,7 @@ protected:
 	VECTOR rv_prog;
 	VECTOR rv_corr;
 	VECTOR rv_time;
+	double dt_step;
 	/*процедура формирующая разгонного массива экстраполяционным методом
 	  для интегрирования методом Адамса-Башфорта-Мултона 8-го порядка */
 	void Iteracii_ABM8();
@@ -255,7 +259,7 @@ protected:
 
 
 
-	bool stepCalculation();
+
 
 };
 

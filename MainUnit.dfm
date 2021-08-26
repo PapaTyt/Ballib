@@ -13,4 +13,15 @@ object Form1: TForm1
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
+  object BitBtn1: TBitBtn
+    Left = 456
+    Top = 144
+    Width = 75
+    Height = 25
+    Caption = 'BitBtn1'
+    DoubleBuffered = True
+    ParentDoubleBuffered = False
+    TabOrder = 0
+    OnClick = BitBtn1Click
+  end
 end

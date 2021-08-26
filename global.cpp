@@ -9,4 +9,4 @@
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
-dph::EphemerisRelease de405("JPLEPH");
+dph::EphemerisRelease de405("planet/JPLEPH");
