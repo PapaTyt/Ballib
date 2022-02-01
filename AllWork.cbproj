@@ -65,7 +65,6 @@
 				<BuildOrder>0</BuildOrder>
 			</CppCompile>
 			<ResFiles Include="AllWork.res">
-				<ModuleName>AllWork.res</ModuleName>
 				<BuildOrder>1</BuildOrder>
 			</ResFiles>
 			<CppCompile Include="MainUnit.cpp">
@@ -107,6 +106,10 @@
 			<CppCompile Include="integration.cpp">
 				<DependentOn>integration.h</DependentOn>
 				<BuildOrder>11</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="L2.cpp">
+				<DependentOn>L2.h</DependentOn>
+				<BuildOrder>12</BuildOrder>
 			</CppCompile>
 			<FormResources Include="MainUnit.dfm"/>
 			<BuildConfiguration Include="Base">

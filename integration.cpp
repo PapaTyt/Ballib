@@ -69,15 +69,17 @@ rp[2]=true;
 rp[3]=false;
 rp[4]=false;
 centralBody=B_EARTH;
+harmonicType=H32;
 harmonicOrder=8;
-planet[0]=true;
-planet[1]=true;
-planet[2]=true;
-planet[3]=true;
-planet[4]=true;
-planet[5]=true;
-planet[6]=true;
-planet[7]=true;
+
+planet[0]=false;
+planet[1]=false;
+planet[2]=false;
+planet[3]=false;
+planet[4]=false;
+planet[5]=false;
+planet[6]=false;
+planet[7]=false;
 planet[8]=false;
 planet[9]=true;
 planet[10]=true;
@@ -235,8 +237,9 @@ if(calculeteMatrix){
 	for(int i=0;i<3;i++){
 		for(int j=0; j<3;j++)
 			df_central_field[i][j]=rv.r[i]*rv.r[j]/R2;
+		df_central_field[i][i]-=1./3.;
 	}
-	for(int i=0; i<3; i++)  df_central_field[i][i]-=1./3.;
+
 	for(int i=0; i<3;i++){
 		for(int j=0; j<3; j++)
 			df_central_field[i][j]*=3*mu/R3;
@@ -1296,7 +1299,7 @@ while(!end){
 				dt_step=t-RV[0].t;
 				Extrapolation(rv_time);
 				//выполняем необходимые действия на шаге
-				if(stepCalculation()) end=true;
+				if(!stepCalculation()) end=true;
 				//проверяем на конец интервала
 				if(t==INTERVAL) end=true;
 				//проверяем на величину последнего шага
@@ -1463,6 +1466,7 @@ n[3]=6;
 //проверяем не превышаетли начальный шаг H=1с. интервал интегрирования
 ///////////////////////////////////
 //if(STEP<H) {H=STEP; fl=true;}
+if(dt_step==0) return;
 if(dt_step<0) H=-H;
 if(fabs(dt_step)<=fabs(H)) H=dt_step/10.;
 ////////////////////////////////
@@ -1607,6 +1611,22 @@ bool call;
 switch(typeCalculation){
 	case 0: call=printSteate();
 			break;
+   // case 1:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 return call;
 }
@@ -1614,10 +1634,17 @@ return call;
 bool chi::integration::printSteate(){
 FILE *ff;
 AnsiString str=JDToStr(t_nu+rv_time.t/86400, 1);
+
 ff=fopen("1.txt", "a");
-fprintf(ff, "",
-		str,
-		rv_time.r[0], rv_time.r[0], rv_time.r[0],
-		rv_time.v[0], rv_time.v[0], rv_time.v[0]);
+ 
+fprintf(ff, "%10.1f %s %15.7f %15.7f %15.7f %15.7f %15.7f %15.7f\n",
+		rv_time.t,
+		str.c_str(),
+		rv_time.r[0], rv_time.r[1], rv_time.r[2],
+		rv_time.v[0], rv_time.v[1], rv_time.v[2]);
+
 fclose(ff);
 }
+
+
+

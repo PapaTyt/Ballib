@@ -15,5 +15,7 @@
     <Transaction>2021.08.02 16:39:10.225.h,C:\_D\NPOL\Ballib\Unit1.h=C:\_D\NPOL\Ballib\time_convert.h</Transaction>
     <Transaction>2021.08.03 09:46:51.687.cpp,C:\_D\NPOL\Ballib\Unit1.cpp=C:\_D\NPOL\Ballib\integration.cpp</Transaction>
     <Transaction>2021.08.03 09:46:51.687.h,C:\_D\NPOL\Ballib\Unit1.h=C:\_D\NPOL\Ballib\integration.h</Transaction>
+    <Transaction>2022.02.01 14:50:37.338.cpp,C:\_D\NPOL\Ballib\Unit1.cpp=C:\_D\NPOL\Ballib\L2.cpp</Transaction>
+    <Transaction>2022.02.01 14:50:37.338.h,C:\_D\NPOL\Ballib\Unit1.h=C:\_D\NPOL\Ballib\L2.h</Transaction>
   </Transactions>
 </BorlandProject>

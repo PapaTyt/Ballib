@@ -3,37 +3,7 @@
 
 __history/AllWork.cpp.~11~
 
-Debug/AllWork.#00
-
-Debug/AllWork.exe
-
-Debug/AllWork.ilc
-
-Debug/AllWork.ild
-
-Debug/AllWork.ilf
-
-Debug/AllWork.ils
-
-Debug/AllWork.map
-
-Debug/AllWork.obj
-
-Debug/AllWork.pch
-
-Debug/AllWork.tds
-
-Debug/dephem.obj
-
-Debug/global.obj
-
-Debug/MainUnit.obj
-
-Debug/AllWork.#01
-
-Debug/mathematic.obj
-
-Debug/report.obj
+Debug/
 
 *.obj
 
@@ -41,3 +11,7 @@ __history/
 
 from_flen/
 
+
+Debug/planet/JPLEPH
+
+Debug/planet/SolarActivity.dat

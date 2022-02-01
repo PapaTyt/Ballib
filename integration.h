@@ -2,6 +2,7 @@
 
 #ifndef integrationH
 #define integrationH
+#include <vcl.h>
 //---------------------------------------------------------------------------
 namespace chi {
 
