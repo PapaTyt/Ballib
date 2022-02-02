@@ -3,11 +3,12 @@
 #ifndef integrationH
 #define integrationH
 #include <vcl.h>
+#include <vector>
 //---------------------------------------------------------------------------
 namespace chi {
 
 //структура вектора для численного интегрирования
-struct VECTOR{
+struct VectSost{
 	double r[3];	//радиус-вектор КА
 	double v[3];	//вектор скорости КА
 	double f[3];	//вектор правых частей (возмущающих ускорений)
@@ -16,6 +17,17 @@ struct VECTOR{
 	double dfdx[6][6];
 	double F_[6][6];
 };
+//структура вектора для численного интегрирования
+struct Vect{
+	double r[3];	//радиус-вектор КА
+	double v[3];	//вектор скорости КА
+	double t;		//время в секундах от момента времени T_NU
+
+};
+
+
+
+
 
 /* Значения параметров для метода dph::EphemerisReelase::calculateBody(...).
    Данные значения соответствуют индексам тел, для которых можно получить
@@ -73,14 +85,16 @@ public:
 	void Extrapolation();
 	/**/
 
-
+    std::vector<Vect> rv_trace;
+	std::vector<Vect> rv_trace_L2;
 	/**/
 
 //private:
 protected:
 	/*начальные условия интегрирования*/
-	VECTOR rv_nu;	//начальный радиус-вектор [км]
+	VectSost rv_nu;	//начальный радиус-вектор [км]
 	double t_nu;	//начальный момент времени в формате юлианской даты (UTC)
+
 
 
 	/*параметры численного интегрирования*/
@@ -171,74 +185,74 @@ protected:
 
 	/*вычисление возмущающего ускорения, обусловленного центральным
 	  гавитационным полем Земли и матрицы частных производных этого вектора*/
-	void central_field(VECTOR rv);
+	void central_field(VectSost rv);
 
 	/*вычисление возмущающего ускорения, обусловленного центральным
 	  гавитационным полем Луны и матрицы частных производных этого вектора*/
-	void central_field_moon(VECTOR rv);
+	void central_field_moon(VectSost rv);
 
 	/*вычисление возмущающего ускорения обусловленного нецентральностью
 	  гравитационного поля Земли и матрицы частных производных этого вектора*/
-	void off_central_field(VECTOR rv);
+	void off_central_field(VectSost rv);
 
 	/*вычисление возмущающего ускорения обусловленного нецентральностью
 	  гравитационного поля Луны и матрицы частных производных этого вектора*/
-	void off_central_field_moon(VECTOR rv);
+	void off_central_field_moon(VectSost rv);
 
 
 	/*вычисление возмущающего ускорения обусловленного нецентральностью
 	  гравитационного поля Земли(второй зональной гармоникой - С20)*/
-	void off_central_field_C20(VECTOR rv);
+	void off_central_field_C20(VectSost rv);
 
 	/*вычисление возмущающего ускорения обусловленного нецентральностью
 	  гравитационного поля Земли(второй зональной гармоникой - С40)*/
-	void off_central_field_C40(VECTOR rv);
+	void off_central_field_C40(VectSost rv);
 
 
 	/*вычисление возмущающего ускорения обусловленного нецентральностью
 	  гравитационного поля Земли с учетом гармоник до 32х32 и матрицы частных
 	  производных этого вектора*/
-	void off_central_field_32(VECTOR rv, double df[3]);
+	void off_central_field_32(VectSost rv, double df[3]);
 
 	/*вычисление возмущающего ускорения обусловленного нецентральностью
 	  гравитационного поля Луны с учетом гармоник до 75х75 и матрицы частных
 	  производных этого вектора*/
-	void off_central_field_75_moon(VECTOR rv, double df[3]);
+	void off_central_field_75_moon(VectSost rv, double df[3]);
 
 	/*вычисление ускорения обусловленных действием небесных тел
 	  (реализация для 10 небесных тел, центральное тело Земля) и матрицы частных
 	  производных этого вектора*/
-	void celestial_bodies(VECTOR rv);
+	void celestial_bodies(VectSost rv);
 
     /*вычисление ускорения обусловленных действием небесных тел
 	  (реализация для 10 небесных тел, центральное тело Луна) и матрицы частных
 	  производных этого вектора*/
-	void celestial_bodies_moon(VECTOR rv);
+	void celestial_bodies_moon(VectSost rv);
 
 	/*вычисление ускорения обусловленного действием солнечного излучения и
 	  матрицы частных производных этого вектора*/
-	void solar_radiation(VECTOR rv);
+	void solar_radiation(VectSost rv);
 
 	/*вычисление ускорения обусловленного воздействием силы сопротивления
 	  атмосферы в соответствии с ГОСТ Р 25645.166-2004*/
-	void atmosphere(VECTOR rv);
+	void atmosphere(VectSost rv);
 
 	/*вычисление ускорения обусловленного воздействием силы сопротивления
 	  атмосферы в соответствии с ГОСТ Р 25645.166-2004*/
-	void atmosphereGOST2004(VECTOR rv);
+	void atmosphereGOST2004(VectSost rv);
 
 	/*вычисление ускорения обусловленного работой двигательной установки*/
-	void traction(VECTOR rv);
+	void traction(VectSost rv);
 
 
 
 
 	/*ABM8*/
-	VECTOR RV[8];
+	VectSost RV[8];
 
-	VECTOR rv_prog;
-	VECTOR rv_corr;
-	VECTOR rv_time;
+	VectSost rv_prog;
+	VectSost rv_corr;
+	VectSost rv_time;
 	double dt_step;
 	/*процедура формирующая разгонного массива экстраполяционным методом
 	  для интегрирования методом Адамса-Башфорта-Мултона 8-го порядка */
@@ -254,8 +268,20 @@ protected:
 	  Адамса-Башфорта-Мултона 8-го порядка */
 	void Increase_dt_ABM8 ();
 	/*Процедура Экстрополяции Грега-Булирша-Штёра*/
-	void Extrapolation(VECTOR &rv0);
+	void Extrapolation(VectSost &rv0);
 
+
+
+	bool trajectory();
+    bool max_t();
+
+
+
+	/*параметры работы по L2*/
+	/*ограничения по области*/
+	double Lx;
+	double Ly;
+	double Lz;
 
 
 

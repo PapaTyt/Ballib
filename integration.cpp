@@ -72,18 +72,25 @@ centralBody=B_EARTH;
 harmonicType=H32;
 harmonicOrder=8;
 
-planet[0]=false;
-planet[1]=false;
+planet[0]=true;
+planet[1]=true;
 planet[2]=false;
-planet[3]=false;
-planet[4]=false;
-planet[5]=false;
-planet[6]=false;
-planet[7]=false;
+planet[3]=true;
+planet[4]=true;
+planet[5]=true;
+planet[6]=true;
+planet[7]=true;
 planet[8]=false;
 planet[9]=true;
 planet[10]=true;
 calculeteMatrix=0;
+
+
+
+
+Lx=500000;
+Ly-1000000;
+Lz=400000;
 
 }
 
@@ -203,7 +210,7 @@ if(calculeteMatrix){
 
 /*вычисление возмущающего ускорения, обусловленного центральным
   гавитационным полем Земли и матрицы частных производных этого вектора*/
-void chi::integration::central_field(VECTOR rv){
+void chi::integration::central_field(VectSost rv){
 /*
 	 *  Параметры:
 	 *   rv – структура типа VECTOR (вектор состояния и матрицы)
@@ -249,7 +256,7 @@ if(calculeteMatrix){
 
 /*вычисление возмущающего ускорения, обусловленного центральным
   гавитационным полем Луны и матрицы частных производных этого вектора*/
-void chi::integration::central_field_moon(VECTOR rv){
+void chi::integration::central_field_moon(VectSost rv){
 /*
 	 *  Параметры:
 	 *   rv – структура типа VECTOR (вектор состояния и матрицы)
@@ -294,7 +301,7 @@ if(calculeteMatrix){
 
 /*вычисление возмущающего ускорения обусловленного нецентральностью
   гравитационного поля Земли и матрицы частных производных этого вектора*/
-void chi::integration::off_central_field(VECTOR rv){
+void chi::integration::off_central_field(VectSost rv){
 /*
 	 *  Параметры:
 	 *   rv – структура типа VECTOR (вектор состояния и матрицы)
@@ -351,7 +358,7 @@ switch(harmonicType){
 
 /*вычисление возмущающего ускорения обусловленного нецентральностью
   гравитационного поля Луны и матрицы частных производных этого вектора*/
-void chi::integration::off_central_field_moon(VECTOR rv){
+void chi::integration::off_central_field_moon(VectSost rv){
 /*
 	 *  Параметры:
 	 *   rv – структура типа VECTOR (вектор состояния и матрицы)
@@ -394,7 +401,7 @@ if(calculeteMatrix){
 
 /*вычисление возмущающего ускорения обусловленного нецентральностью
   гравитационного поля Земли(второй зональной гармоникой - С20)*/
-void chi::integration::off_central_field_C20(VECTOR rv){
+void chi::integration::off_central_field_C20(VectSost rv){
 /*
 	 *  Параметры:
 	 *   rv – структура типа VECTOR (вектор состояния и матрицы)
@@ -451,7 +458,7 @@ if(calculeteMatrix){
 	
 /*вычисление возмущающего ускорения обусловленного нецентральностью
   гравитационного поля Земли(второй зональной гармоникой - С40)*/
- void chi::integration::off_central_field_C40(VECTOR rv){
+ void chi::integration::off_central_field_C40(VectSost rv){
  /*
 
 	 *  Параметры:
@@ -516,7 +523,7 @@ a_off_central_field[2] =  rv.r[2]*(q + dq);
 /*вычисление возмущающего ускорения обусловленного нецентральностью
   гравитационного поля Земли с учетом гармоник до 32х32 и матрицы частных
   производных этого вектора*/
-void chi::integration::off_central_field_32(VECTOR rv, double df[3]){
+void chi::integration::off_central_field_32(VectSost rv, double df[3]){
 /*
 
 	 *  Параметры:
@@ -631,7 +638,7 @@ GEOtoGEI(a_G_gr,t,df);
 /*вычисление возмущающего ускорения обусловленного нецентральностью
   гравитационного поля Луны с учетом гармоник до 75х75 и матрицы частных
   производных этого вектора*/
-void chi::integration::off_central_field_75_moon(VECTOR rv, double df[3]){
+void chi::integration::off_central_field_75_moon(VectSost rv, double df[3]){
 /*
 
 	 *  Параметры:
@@ -747,7 +754,7 @@ SGtoSC(df_G_gr, zero, t, df, zero);
 /*вычисление ускорения обусловленных действием небесных тел
   (реализация для 10 небесных тел, центральное тело Земля) и матрицы частных
   производных этого вектора*/
-void chi::integration::celestial_bodies(VECTOR rv){
+void chi::integration::celestial_bodies(VectSost rv){
 /*
 	 *  Параметры:
 	 *   rv – структура типа VECTOR (вектор состояния и матрицы)
@@ -850,7 +857,7 @@ if(calculeteMatrix){
 /*вычисление ускорения обусловленных действием небесных тел
   (реализация для 10 небесных тел, центральное тело Луна) и матрицы частных
   производных этого вектора*/
-void chi::integration::celestial_bodies_moon(VECTOR rv){
+void chi::integration::celestial_bodies_moon(VectSost rv){
 /*
 	 *  Параметры:
 	 *   rv – структура типа VECTOR (вектор состояния и матрицы)
@@ -951,21 +958,21 @@ if(calculeteMatrix){
 
 	/*вычисление ускорения обусловленного действием солнечного излучения и
 	  матрицы частных производных этого вектора*/
-	void chi::integration::solar_radiation(VECTOR rv){
+	void chi::integration::solar_radiation(VectSost rv){
 	}
 
 	/*вычисление ускорения обусловленного воздействием силы сопротивления
 	  атмосферы в соответствии с ГОСТ Р 25645.166-2004*/
-	void chi::integration::atmosphere(VECTOR rv){
+	void chi::integration::atmosphere(VectSost rv){
 	}
 
 	/*вычисление ускорения обусловленного воздействием силы сопротивления
 	  атмосферы в соответствии с ГОСТ Р 25645.166-2004*/
-	void chi::integration::atmosphereGOST2004(VECTOR rv){
+	void chi::integration::atmosphereGOST2004(VectSost rv){
 	}
 
 	/*вычисление ускорения обусловленного работой двигательной установки*/
-	void chi::integration::traction(VECTOR rv){
+	void chi::integration::traction(VectSost rv){
 	}
 
 
@@ -988,9 +995,9 @@ double  v1[3]={0},
 		v2[3]={0},
 		v3[3]={0},
 		v4[3]={0};
-VECTOR temp;
+VectSost temp;
 /*присваиваивание текущим НУ начальных НУ*/
-VECTOR rv=rv_nu;
+VectSost rv=rv_nu;
 
 
 while(rv.t+dt<=tk){
@@ -1060,8 +1067,8 @@ void chi::integration::RK4_ODE2()
 double dt=1;      /*шаг интегрирования не более одной секунды	*/
 bool end=false; //флаг окончания расчета
 double tk=interval*86400.;  /*вычисление интервала интегрирования*/
-VECTOR temp;
-VECTOR rv;
+VectSost temp;
+VectSost rv;
 
 /*коэффициенты интегрирования*/
 double 	k1[3]={0},
@@ -1143,10 +1150,10 @@ double t_step=step;
 double DT=0;
 double sum;
 double TE, TEmax, TOL=1e-8, TOLmax=1e-10;
-VECTOR rv[7];
-VECTOR temp;
-VECTOR rv_next;
-VECTOR rv_next_cap;
+VectSost rv[7];
+VectSost temp;
+VectSost rv_next;
+VectSost rv_next_cap;
 rv[0]=rv_nu;
 rv[0].t=0;
 
@@ -1242,7 +1249,7 @@ bool end=false; //флаг окончания расчета
 double e1=10e-8, e2=10e-14; //границы точности в пределах которых делается шаг
 double INTERVAL=interval*86400.; //интервал интегрирования
 int INC=0, INC_DEC=0;    //счетчики количества увеличений и уменьшений шага
-VECTOR tmp;
+VectSost tmp;
 //------------------
 //отчистка всех флагов до начала интегрирования
 //CleanFlag();
@@ -1330,7 +1337,7 @@ while(!end){
 /*процедура формирующая разгонного массива экстраполяционным методом
 		для интегрирования методом Адамса-Башфорта-Мултона 8-го порядка */
 void chi::integration::Iteracii_ABM8(){
-VECTOR temp;
+VectSost temp;
 dt_step=dt;
 //Начальные условия
 rightPart(RV[0]);
@@ -1413,7 +1420,7 @@ Iteracii_ABM8();
 		Адамса-Башфорта-Мултона 8-го порядка */
 void chi::integration::Increase_dt_ABM8 (){
 
-VECTOR RV_tmp[4];
+VectSost RV_tmp[4];
 for(int i=0; i<4; i++){
 	 RV_tmp[i]=RV[2*i];
 
@@ -1454,7 +1461,7 @@ void chi::integration::Extrapolation(VECTOR &rv0){
 
 int n[30];
 bool end=false, END=false, fl=false;
-VECTOR rv[3], N[30][30];
+VectSost rv[3], N[30][30];
 double  eps=1e-12, t, t0, H=0.1, NN, VV, n_n,n1,
 		h[30]={0};
 //создаем переменную текущего времени
@@ -1611,7 +1618,22 @@ bool call;
 switch(typeCalculation){
 	case 0: call=printSteate();
 			break;
-   // case 1:
+
+
+
+
+
+
+
+
+
+
+
+
+
+	/*Решения для АКЦ*/
+	case 11: call=max_t();
+			 break;
 
 
 
@@ -1647,4 +1669,48 @@ fclose(ff);
 }
 
 
+bool chi::integration::trajectory(){
+Vect temp;
+
+if(rv_time.t==0) rv_trace.clear();
+
+for(int i=0; i<3; i++){
+	temp.r[i]=rv_time.r[i];
+	temp.v[i]=rv_time.v[i];
+}
+temp.t=rv_time.t;
+rv_trace.push_back(temp);
+if(norm(rv_time.r)<2000000) return 1;
+else return 0;
+}
+
+
+bool chi::integration::max_t(){
+
+Vect temp;
+Vect temp_L2;
+double r[3];
+double t=t_nu+rv_time.t/86400.;
+
+if(rv_time.t==0) rv_trace.clear();
+
+J2000toL2(rv_time.r,  t, temp_L2.r);
+
+for(int i=0; i<3; i++){
+	temp.r[i]=rv_time.r[i];
+	temp.v[i]=rv_time.v[i];
+}
+temp.t=t;
+temp_L2.t=t;
+rv_trace.push_back(temp);
+rv_trace_L2.push_back(temp_L2);
+
+if(fabs(temp_L2.r[0])<Lx && fabs(temp_L2.r[1])<Ly && fabs(temp_L2.r[2])<Lz) {
+	return 0;
+}
+else return 1;
+
+
+
+}
 
