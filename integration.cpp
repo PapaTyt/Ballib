@@ -20,7 +20,7 @@
 
 
 /*запись НУ*/
-void chi::integration::set_NU(double r[3], double v[3], double t){
+void chi::integration::setNU(double r[3], double v[3], double t){
 	/*
 	 *Параметры:
 	 * 	r[3]	- радиус вектор КА [км]
@@ -35,7 +35,7 @@ for(int i=0; i<3; i++){
 rv_nu.t=0;
 t_nu=t;
 }
-void chi::integration::set_NU(double rv[6],double t){
+void chi::integration::setNU(double rv[6],double t){
 	/*
 	 *Параметры:
 	 *	кv[6] 	- вектор состояния КА [км, км/с]
@@ -89,8 +89,8 @@ calculeteMatrix=0;
 
 
 Lx=500000;
-Ly-1000000;
-Lz=400000;
+Ly-1100000;
+Lz=600000;
 
 }
 
@@ -120,7 +120,7 @@ Lz=400000;
 	/* [ВЫЧИСЛЕНИЕ ПРАВЫХ ЧАСТЕЙ] */
 
 /*вычисление правых частей ДУ*/
-void chi::integration::rightPart(VECTOR &rv){
+void chi::integration::rightPart(VectSost &rv){
 /*
 	 *  Параметры:
 	 *   rv – структура типа VECTOR (вектор состояния и матрицы)
@@ -337,7 +337,7 @@ switch(harmonicType){
 				вектору положения*/
 			  if(calculeteMatrix){
 				  double delta=0.001;
-				  VECTOR temp;  
+				  VectSost temp;
 				  for(int i=0; i<3; i++) {
 					  temp=rv;
 					  temp.r[i]+=delta;
@@ -383,7 +383,7 @@ off_central_field_75_moon(rv, df);
   нецентральностьи гравитационного поля тела по вектору положения*/
 if(calculeteMatrix){
 	double delta=0.001;
-	VECTOR temp;  
+	VectSost temp;
 	for(int i=0; i<3; i++) {
 		  temp=rv;
 		  temp.r[i]+=delta;
@@ -1306,9 +1306,11 @@ while(!end){
 				dt_step=t-RV[0].t;
 				Extrapolation(rv_time);
 				//выполняем необходимые действия на шаге
-				if(!stepCalculation()) end=true;
+				if(!stepCalculation())
+					end=true;
 				//проверяем на конец интервала
-				if(t==INTERVAL) end=true;
+				if(t==INTERVAL)
+					end=true;
 				//проверяем на величину последнего шага
 				else if(fabs(t+step)>fabs(INTERVAL)) step=INTERVAL-t;
 				t+=step;
@@ -1378,12 +1380,14 @@ void chi::integration::ProgKor (){
 		rv_prog.v[i]=RV[7].v[i]+dt*Fv_AB[i];
 		rv_prog.r[i]=RV[7].r[i]+dt*Fr_AB[i];
 	}
-	for(int i=0; i<6; i++)
-		for(int ii=0; ii<6; ii++){
-			Fdf_AB[i][ii]=0;
-			for (int j=0; j<8; j++) Fdf_AB[i][ii]+=abm8_AB[j]*RV[j].F_[i][ii];
-			rv_prog.F[i][ii]=RV[7].F[i][ii]+dt*Fdf_AB[i][ii];
-		}
+	if(calculeteMatrix){
+		for(int i=0; i<6; i++)
+			for(int ii=0; ii<6; ii++){
+				Fdf_AB[i][ii]=0;
+				for (int j=0; j<8; j++) Fdf_AB[i][ii]+=abm8_AB[j]*RV[j].F_[i][ii];
+				rv_prog.F[i][ii]=RV[7].F[i][ii]+dt*Fdf_AB[i][ii];
+			}
+	}
 
 	rightPart(rv_prog);
 	//коррекция
@@ -1397,13 +1401,14 @@ void chi::integration::ProgKor (){
 		rv_corr.v[i]=RV[7].v[i]+dt*Fv_AM[i];
 		rv_corr.r[i]=RV[7].r[i]+dt*Fr_AM[i];
 	}
-
-    for(int i=0; i<6; i++)
-		for(int ii=0; ii<6; ii++){
-			Fdf_AM[i][ii]=abm8_AM[7]*rv_prog.F_[i][ii];
-			for (int j=0; j<8; j++) Fdf_AM[i][ii]+=abm8_AM[j-1]*RV[j].F_[i][ii];
-			rv_corr.F[i][ii]=RV[7].F[i][ii]+dt*Fdf_AM[i][ii];
-		}
+	if(calculeteMatrix){
+		for(int i=0; i<6; i++)
+			for(int ii=0; ii<6; ii++){
+				Fdf_AM[i][ii]=abm8_AM[7]*rv_prog.F_[i][ii];
+				for (int j=0; j<8; j++) Fdf_AM[i][ii]+=abm8_AM[j-1]*RV[j].F_[i][ii];
+				rv_corr.F[i][ii]=RV[7].F[i][ii]+dt*Fdf_AM[i][ii];
+			}
+	}
 	rightPart(rv_corr);
 
 }
@@ -1450,7 +1455,7 @@ for(int i=0; i<4; i++){
 
 
 /* 4.7-> Процедура Экстрополяции Грега-Булирша-Штёра*/
-void chi::integration::Extrapolation(VECTOR &rv0){
+void chi::integration::Extrapolation(VectSost &rv0){
 //---------------------------------------------------------------------------
 /* 4.7-> Процедура Экстрополяции Грега-Булирша-Штёра
 =============================================================================
@@ -1461,7 +1466,7 @@ void chi::integration::Extrapolation(VECTOR &rv0){
 
 int n[30];
 bool end=false, END=false, fl=false;
-VectSost rv[3], N[30][30];
+VectSost rv[3], N[30][30]={0};
 double  eps=1e-12, t, t0, H=0.1, NN, VV, n_n,n1,
 		h[30]={0};
 //создаем переменную текущего времени
@@ -1496,9 +1501,11 @@ while (!END){
 			rv[2].v[i]=rv[1].v[i]+h[k]*rv[1].f[i];
 			rv[2].r[i]=rv[1].r[i]+h[k]*rv[1].v[i];
 		}
-		for(int i=0; i<6; i++)
-			for(int j=0; j<6; j++)
-				rv[2].F[i][j]=rv[1].F[i][j]+h[k]*rv[1].F_[i][j];
+		if(calculeteMatrix){
+			for(int i=0; i<6; i++)
+				for(int j=0; j<6; j++)
+					rv[2].F[i][j]=rv[1].F[i][j]+h[k]*rv[1].F_[i][j];
+		}
 
 
 		//определяем вектор состояния на последующих микрошагах
@@ -1514,9 +1521,11 @@ while (!END){
 				rv[2].v[j]=rv[0].v[j]+2.*h[k]*rv[1].f[j];
 				rv[2].r[j]=rv[0].r[j]+2.*h[k]*rv[1].v[j];
 			}
-			for(int i=0; i<6; i++)
-				for(int j=0; j<6; j++)
-					rv[2].F[i][j]=rv[1].F[i][j]+h[k]*rv[1].F_[i][j];
+			if(calculeteMatrix){
+				for(int i=0; i<6; i++)
+					for(int j=0; j<6; j++)
+						rv[2].F[i][j]=rv[1].F[i][j]+h[k]*rv[1].F_[i][j];
+			}
 
 		}
 		//вычисляем первый апроксимационный элемент экстраполяционной таблицы в текущей строке
@@ -1537,9 +1546,11 @@ while (!END){
 			  N[k][j+1].r[i]=N[k][j].r[i]+(N[k][j].r[i]-N[k-1][j].r[i])/(n_n-1);
 			  N[k][j+1].v[i]=N[k][j].v[i]+(N[k][j].v[i]-N[k-1][j].v[i])/(n_n-1);
 			}
-			for(int i=0; i<6; i++)
-			for(int ii=0; ii<6; ii++)
-				N[k][j+1].F[i][ii]=N[k][j].F[i][ii]+(N[k][j].F[i][ii]-N[k-1][j].F[i][ii])/(n_n-1);
+			if(calculeteMatrix){
+				for(int i=0; i<6; i++)
+					for(int ii=0; ii<6; ii++)
+						N[k][j+1].F[i][ii]=N[k][j].F[i][ii]+(N[k][j].F[i][ii]-N[k-1][j].F[i][ii])/(n_n-1);
+			}
 		}
 		//вычисление нормы отклонения двух последних элементов экстрополяционной таблицы в текущей строке
 		NN=norm(N[k][k].r,N[k][k-1].r);
@@ -1706,9 +1717,9 @@ rv_trace.push_back(temp);
 rv_trace_L2.push_back(temp_L2);
 
 if(fabs(temp_L2.r[0])<Lx && fabs(temp_L2.r[1])<Ly && fabs(temp_L2.r[2])<Lz) {
-	return 0;
+	return true;
 }
-else return 1;
+else return false;
 
 
 

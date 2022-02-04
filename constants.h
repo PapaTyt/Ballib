@@ -6,7 +6,8 @@ const double pi      = 3.141592653589793238462643;// Pi
 const double pi_2    = pi*2.;                     // 2 Pi
 const double AE      = 149597870.66;              // Астроном. единица (км)
 
-
+const double rtd	 = 180./pi;
+const double dtr	 = pi/180.;
 
 
 

@@ -9,6 +9,11 @@
 #include "integration.h"
 #include "time_convert.h"
 
+
+
+
+#include "L2.h"
+
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma resource "*.dfm"
@@ -101,21 +106,39 @@ void __fastcall TForm1::BitBtn1Click(TObject *Sender)
 //
 
 
-double  t0=DateTimeToJulianDate(EncodeDateTime(2022, 12, 22, 5, 35, 0, 0)),
-		r0[3]={-6894.61065462528, 159.43744304995, 940.85721424237},
-		v0[3]={1.03809306208,   0.99332852891,   7.43011822517};
+//double  t0=DateTimeToJulianDate(EncodeDateTime(2022, 12, 22, 5, 35, 0, 0)),
+//		r0[3]={-6894.61065462528, 159.43744304995, 940.85721424237},
+//		v0[3]={1.03809306208,   0.99332852891,   7.43011822517};
+//
+////FILE *ff;
+////ff=fopen("1.txt", "w");
+////fclose(ff);
+//chi::integration O;
+//O.set_NU(r0, v0, t0);
+//O.setParametrs(900/86400., 0.01);
+//O.setParametrs();
+//O.setTypeCalculation(0);
+//O.ABM8();
 
-//FILE *ff;
-//ff=fopen("1.txt", "w");
-//fclose(ff);
-chi::integration O;
-O.set_NU(r0, v0, t0);
-O.setParametrs(900/86400., 0.01);
-O.setParametrs();
-O.setTypeCalculation(0);
-O.ABM8();
+
 
 ShowMessage("");
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::BitBtn2Click(TObject *Sender)
+{
+
+double  t0=DateTimeToJulianDate(EncodeDateTime(2030, 2, 1, 0, 0, 0, 0)),
+		r0[3]={-659183.3490256558,  1514125.5247464842,   614206.3570772199},
+		v0[3]={0.0253602582,       -0.0577662914,        0.1258380499};
+correctoinL2 spm;
+
+spm.setNU(r0, v0, t0);
+spm.corrl2();
+
+ShowMessage("");
+
 }
 //---------------------------------------------------------------------------
 

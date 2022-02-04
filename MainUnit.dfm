@@ -14,8 +14,8 @@ object Form1: TForm1
   PixelsPerInch = 96
   TextHeight = 13
   object BitBtn1: TBitBtn
-    Left = 456
-    Top = 144
+    Left = 48
+    Top = 32
     Width = 75
     Height = 25
     Caption = 'BitBtn1'
@@ -23,5 +23,16 @@ object Form1: TForm1
     ParentDoubleBuffered = False
     TabOrder = 0
     OnClick = BitBtn1Click
+  end
+  object BitBtn2: TBitBtn
+    Left = 464
+    Top = 240
+    Width = 75
+    Height = 25
+    Caption = 'test ASC'
+    DoubleBuffered = True
+    ParentDoubleBuffered = False
+    TabOrder = 1
+    OnClick = BitBtn2Click
   end
 end

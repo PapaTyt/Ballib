@@ -54,8 +54,8 @@ public:
 	/* [СТАНДАРТНЫЕ МЕТОДЫ] */
 
 	/*запись НУ*/
-	void set_NU(double r[3], double v[3], double t);
-	void set_NU(double rv[6],  double t);
+	void setNU(double r[3], double v[3], double t);
+	void setNU(double rv[6],  double t);
 
 	/*запись параметров интегрирования*/
 	void setParametrs(double interval_, double step_);
@@ -181,7 +181,7 @@ protected:
 	/* [ВЫЧИСЛЕНИЕ ПРАВЫХ ЧАСТЕЙ] */
 
 	/*вычисление правых частей ДУ*/
-	void rightPart(VECTOR &rv);
+	void rightPart(VectSost &rv);
 
 	/*вычисление возмущающего ускорения, обусловленного центральным
 	  гавитационным полем Земли и матрицы частных производных этого вектора*/

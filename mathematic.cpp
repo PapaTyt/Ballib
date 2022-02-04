@@ -31,7 +31,7 @@ double Skalyar(const double x1[3], const double x2[3]){
 }
 //---------------------------------------------------------------------------
 //угол между векторами
-double angel_between_vectors(double r1[3], double r2[3]){
+double angle_between_vectors(double r1[3], double r2[3]){
 double angle;
 double R1=norm(r1);
 double R2=norm(r2);

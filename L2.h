@@ -6,6 +6,8 @@
 //---------------------------------------------------------------------------
 class correctoinL2{
 	public:
+	void setNU(double r[3], double v[3], double t);
+	void corrl2();
 	//private:
 	protected:
 	double t0;
