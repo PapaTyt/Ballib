@@ -41,21 +41,31 @@ double DEC = 0.2162659;
 double RA1 = 4.649850637;    //SGR_A
 double DEC1 = -0.506282045;
 
-double basa_M87;
-double basa_SGR_A;
-double aM=165*dtr;
-double am=90*dtr;
-int NT=11, NC=3;
-int K;
+double basa_M87; 	//текущее значение базы для М87
+double basa_SGR_A;  //текущее значение базы для SGR-A
+double aM=165*dtr;  //максимальный угол между осью Х и направлением на Солнце
+double am=90*dtr;   //минимальный угол между осью Х и направлением на Солнце
+int NT=11,			//Солнце
+	NC=3;           //Земля
+int K=11;           //тип расчета при прогнозирование движения (запись трассы в пределах ограничений)
 chi::Vect temp;
-std::vector<chi::Vect> RV_M87;
-std::vector<chi::Vect> RV_SGR_A;
+std::vector<chi::Vect> RV_L2[7];        //трасса траектории в L2
+std::vector<chi::Vect> RV_J2[7];        //трасса траектории в J2
+std::vector<chi::Vect> RV_M87[7];		//трасса участка возможного проведения наблюдения М87
+std::vector<chi::Vect> RV_SGR_A[7];    //трасса участка возможного проведения наблюдения SGR-A
 chi::integration O;
-double  r_M87[3],r_SGR_A[3];
-double rs[3];
-double r1[3], a, a_M87, a_SGR_A, basa_min=3000, basa_max=50000;
+double  r_M87[3],	//орт направления на М87
+		r_SGR_A[3]; //орт направления на SGR-A
+double 	rs[3,       //вектор Земля-Солнце
+		rkas[3],      //вектор КА-Солнце
+		a,          //угол между направлением на источник и на Солнце
+		a_M87,      //угол между направлением на КА и на М87
+		a_SGR_A,    //угол между направлением на КА и на SGR-A
+		basa_min=3000,    //минимальная база
+		basa_max=50000;   //максимальная база
 
-double step=3600;
+double  interval=300, //интервал расчета
+		step=3600;	//шаг расчета
 
 /*получаем орты направления на источники*/
 philamTOxyz(DEC, RA, 1, r_M87[0], r_M87[1], r_M87[2]);
@@ -65,59 +75,101 @@ philamTOxyz(DEC1, RA1,  1, r_SGR_A[0], r_SGR_A[1], r_SGR_A[2]);
 K=11;
 O.setTypeCalculation(K);
 O.setParametrs();
-O.setParametrs(300, step);
-//закладываем начальные параметры
-O.setNU(r0,v0,t0);
-//интегрируем
-O.ABM8();
-for(int j=0; j<O.rv_trace.size(); j++){
+O.setParametrs(interval, step);
 
-	/*определение направления на Солнце*/
-	de405.calculateR(NT, NC, O.rv_trace[j].t, rs);
-	/*вычисление вектора направления КА-Солнце*/
+for(int i=0; i<3; i++){
+
+	v1[i]=v0[i];
+	r1[i]=r0[i];
+}
+t1=t0;
+
+
+
+for(int l=0; l<7; l++){
+	//формируем ну на очередной прострел
 	for(int i=0; i<3; i++){
-		r1[i]=rs[i]-O.rv_trace[j].r[i];
+		v[i]=v1[i]+dv[i]+DV*s[l][i];
+		r[i]=r1[i];
 	}
-	/*вычисление угла между направлениями на Солнце и на М87*/
-	a=angle_between_vectors(r1,r_M87);
-	/*проверка возможности наблюдения (ограничение по Солнцу)*/
-	if(a>am && a<aM){
-		/*вычисление угла между направлением на КА и на М87*/
-		a_M87=angle_between_vectors(O.rv_trace[j].r, r_M87);
-		/*вычисление базы М87*/
-		basa_M87=norm(O.rv_trace[j].r)*sin(a_M87);
-		/*считаем время наблюдения М87*/
-		if( basa_M87>basa_min && basa_M87<basa_max){
-			for(int ii=0; ii<3; ii++){
-				temp.r[ii]=O.rv_trace_L2[j].r[ii];
-				temp.v[ii]=O.rv_trace_L2[j].v[ii];
-			}
-			temp.t=O.rv_trace[j].t;
-			RV_M87.push_back(temp);
-		}
-	}
+	t=t1;
+	//закладываем начальные параметры
+	O.setNU(r,v,t);
+	//интегрируем
+	O.ABM8();
+	//сохраняем трассы в J2 и L2
+	RV_J2[l]=O.rv_trace;
+	RV_L2[l]=O.rv_trace_L2;
+	//отчищаем трассы для источников
+	RV_M87[l].clear();
+	RV_SGR_A[l].clear();
+	for(int j=0; j<O.rv_trace.size(); j++){
+		
 
-	/*вычисление угла между направлениями на Солнце и на SGR-A*/
-	a=angle_between_vectors(r1,r_SGR_A);
-	/*проверка возможности наблюдения (ограничение по Солнцу)*/
-	if(a>am && a<aM){
-		/*вычисление угла между направлением на КА и на SGR-A*/
-		a_SGR_A=angle_between_vectors(O.rv_trace[j].r, r_SGR_A);
-		/*вычисление базы SGR-A*/
-		basa_SGR_A=norm(O.rv_trace[j].r)*sin(a_SGR_A);
-		/*считаем время наблюдения SGR-A*/
-		if( basa_SGR_A>basa_min && basa_SGR_A<basa_max){
-			for(int ii=0; ii<3; ii++){
-				temp.r[ii]=O.rv_trace_L2[j].r[ii];
-				temp.v[ii]=O.rv_trace_L2[j].v[ii];
+	
+		/*определение направления на Солнце*/
+		de405.calculateR(NT, NC, O.rv_trace[j].t, rs);
+		/*вычисление вектора направления КА-Солнце*/
+		for(int i=0; i<3; i++){
+			rkas[i]=rs[i]-O.rv_trace[j].r[i];
+		}
+		/*вычисление угла между направлениями на Солнце и на М87*/
+		a=angle_between_vectors(rkas,r_M87);
+		/*проверка возможности наблюдения (ограничение по Солнцу)*/
+		if(a>am && a<aM){
+			/*вычисление угла между направлением на КА и на М87*/
+			a_M87=angle_between_vectors(O.rv_trace[j].r, r_M87);
+			/*вычисление базы М87*/
+			basa_M87=norm(O.rv_trace[j].r)*sin(a_M87);
+			/*считаем время наблюдения М87*/
+			if( basa_M87>basa_min && basa_M87<basa_max){
+				for(int ii=0; ii<3; ii++){
+					temp.r[ii]=O.rv_trace_L2[j].r[ii];
+					temp.v[ii]=O.rv_trace_L2[j].v[ii];
+				}
+				temp.t=O.rv_trace[j].t;
+				RV_M87[l].push_back(temp);
 			}
-			temp.t=O.rv_trace[j].t;
-			RV_SGR_A.push_back(temp);
+		}
+
+		/*вычисление угла между направлениями на Солнце и на SGR-A*/
+		a=angle_between_vectors(rkas,r_SGR_A);
+		/*проверка возможности наблюдения (ограничение по Солнцу)*/
+		if(a>am && a<aM){
+			/*вычисление угла между направлением на КА и на SGR-A*/
+			a_SGR_A=angle_between_vectors(O.rv_trace[j].r, r_SGR_A);
+			/*вычисление базы SGR-A*/
+			basa_SGR_A=norm(O.rv_trace[j].r)*sin(a_SGR_A);
+			/*считаем время наблюдения SGR-A*/
+			if( basa_SGR_A>basa_min && basa_SGR_A<basa_max){
+				for(int ii=0; ii<3; ii++){
+					temp.r[ii]=O.rv_trace_L2[j].r[ii];
+					temp.v[ii]=O.rv_trace_L2[j].v[ii];
+				}
+				temp.t=O.rv_trace[j].t;
+				RV_SGR_A[l].push_back(temp);
+			}
 		}
 	}
 }
+ff=fopen("calc.txt", "a");
+//вычисляем времена 
+for(int l=0; l<7; l++){
+	T_L2[l]=RV_L2[l][RV_L2[l].size()-1].t-RV_L2[l][0].t;
+	T_M87[l]=RV_M87[l][RV_M87[l].size()-1].t-RV_M87[l][0].t;
+	T_SGR_A[l]=RV_SGR_A[l][RV_SGR_A[l].size()-1].t-RV_SGR_A[l][0].t;
+}
+
+T_L2_max=0;
+T_M87_max=0;
+T_SGR_A_max=0;
+
+for(int l=0; l<7; l++){
+	if
 
 
+
+}
 
 
 
@@ -158,6 +210,7 @@ if(RV_SGR_A.size()>0){
 	fprintf(ff, "%5.2f", (RV_SGR_A[RV_SGR_A.size()-1].t-RV_SGR_A[0].t)*24);
 }
 fclose(ff);
+
 
 
 
