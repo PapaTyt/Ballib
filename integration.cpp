@@ -18,7 +18,22 @@
 
 #pragma package(smart_init)
 
+/*запись НУ*/
+void chi::integration::getNU(double r[3], double v[3], double &t){
+	/*
+	 *Параметры:
+	 * 	r[3]	- радиус вектор КА [км]
+	 *	v[3] 	- вектор скорости КА [км/с]
+	 *	t	 	- момент времени на который приведен вектор состояния в формате
+				  Юлианской даты (UTC)
+	 */
+for(int i=0; i<3; i++){
+	r[i]=rv_nu.r[i];
+	v[i]=rv_nu.v[i];
+}
 
+t=t_nu;
+}
 /*запись НУ*/
 void chi::integration::setNU(double r[3], double v[3], double t){
 	/*
@@ -89,7 +104,7 @@ calculeteMatrix=0;
 
 
 Lx=500000;
-Ly-1100000;
+Ly=1100000;
 Lz=600000;
 
 }

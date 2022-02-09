@@ -53,6 +53,9 @@ class integration{
 public:
 	/* [ÑÒÀÍÄÀĞÒÍÛÅ ÌÅÒÎÄÛ] */
 
+
+    void getNU(double r[3], double v[3], double &t);
+
 	/*çàïèñü ÍÓ*/
 	void setNU(double r[3], double v[3], double t);
 	void setNU(double rv[6],  double t);
