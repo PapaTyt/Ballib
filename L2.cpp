@@ -7,7 +7,7 @@
 #include "L2.h"
 #include "constants.h"
 #include "global.h"
-#include "integration.h"
+
 #include "mathematic.h"
 #include "time_convert.h"
 #include "coordinate_system.h"
@@ -16,7 +16,7 @@
 #pragma package(smart_init)
 
 
-void correctoinL2::setNU(double r[3], double v[3], double t){
+void correctionL2::setNU(double r[3], double v[3], double t){
 for(int i=0; i<3; i++){
 	r0[i]=r[i];
 	v0[i]=v[i];
@@ -26,7 +26,7 @@ t0=t;
 }
 
 
-void correctoinL2::corrl2(){
+void correctionL2::corrl2(){
 FILE *ff;
 ff=fopen("calc.txt", "w");
 fclose(ff);
@@ -53,10 +53,7 @@ int NT=11,			//Солнце
 int K=11;           //тип расчета при прогнозирование движения (запись трассы в пределах ограничений)
 chi::Vect temp;
 chi::Vect zero;
-std::vector<chi::Vect> RV_L2[7];        //трасса траектории в L2
-std::vector<chi::Vect> RV_J2[7];        //трасса траектории в J2
-std::vector<chi::Vect> RV_M87[7];		//трасса участка возможного проведения наблюдения М87
-std::vector<chi::Vect> RV_SGR_A[7];    //трасса участка возможного проведения наблюдения SGR-A
+
 chi::integration O;
 double  r_M87[3],	//орт направления на М87
 		r_SGR_A[3]; //орт направления на SGR-A
@@ -70,7 +67,12 @@ double 	rs[3],       //вектор Земля-Солнце
 
 double r1[3], v1[3], t1, r[3], v[3], t, dv[3]={0}, DV=0.0001;
 
-double T_L2[7], T_M87[7], T_SGR_A[7], T_L2_max, T_M87_max, T_SGR_A_max;
+double 	T_L2[7],		//массив времен существования в окрестности Л2 при поиске коррекции
+		T_M87[7],       //массив времен возможности наблюдения М87 при поиске коррекции
+		T_SGR_A[7],     //массив времен возможности наблюдения SGR-A при поиске коррекции
+		T_L2_max,       //максимальное время существования в окрестности Л2 при поиске коррекции
+		T_M87_max,      //максимальное время возможности наблюдения М87 при поиске коррекции
+		T_SGR_A_max;    //максимальное время возможности наблюдения SGR-A при поиске коррекции
 int q=0, L;
 
 
@@ -87,11 +89,11 @@ O.setTypeCalculation(K);
 O.setParametrs();
 O.setParametrs(50, step);
 //закладываем начальные параметры
-O.setNU(r,v,t);
+O.setNU(r0,v0,t0);
 //интегрируем
 O.ABM8();
-О.getNU(r0,v0,t0);
-
+O.getNU(r0,v0,t0);
+O.setParametrs(300, step);
 
 
 
@@ -331,5 +333,387 @@ while(!end){
 
 
 
+/*процедура определение номера итераци достижения максимума времени 1/2/3 - M87/SGR-A/L2*/
+void correctionL2::maxt(int type, int &L){
+FILE *ff;
+chi::Vect zero;
+double 	T_L2[7],		//массив времен существования в окрестности L2 при поиске коррекции
+		T_M87[7],       //массив времен возможности наблюдения М87 при поиске коррекции
+		T_SGR_A[7],     //массив времен возможности наблюдения SGR-A при поиске коррекции
+		T_L2_max,       //максимальное время существования в окрестности L2 при поиске коррекции
+		T_M87_max,      //максимальное время возможности наблюдения М87 при поиске коррекции
+		T_SGR_A_max;    //максимальное время возможности наблюдения SGR-A при поиске коррекции
+zero.t=2451544.5;
 
-//void correctionL2::maxt()
+  ff=fopen("calc.txt", "a");
+	//вычисляем времена
+	for(int l=0; l<7; l++){
+		T_L2[l]=RV_L2[l][RV_L2[l].size()-1].t-RV_L2[l][0].t;
+		if (RV_M87[l].size()==0) RV_M87[l].push_back(zero);
+		T_M87[l]=RV_M87[l][RV_M87[l].size()-1].t-RV_M87[l][0].t;
+		if (RV_SGR_A[l].size()==0) RV_SGR_A[l].push_back(zero);
+		T_SGR_A[l]=RV_SGR_A[l][RV_SGR_A[l].size()-1].t-RV_SGR_A[l][0].t;
+	}
+
+	T_L2_max=0;
+	T_M87_max=0;
+	T_SGR_A_max=0;
+	L=-1;
+
+
+
+switch(type){
+	case 1: for(int l=0; l<7; l++){
+				fprintf(ff, "%1i %7.3f %7.3f %7.3f ", l, T_L2[l], T_M87[l], T_SGR_A[l]);
+				if(T_M87[l]>T_M87_max){
+					L=l;
+					T_M87_max =T_M87[l];
+					T_SGR_A_max=T_SGR_A[l];
+					T_L2_max=T_L2[l];
+				}
+				fprintf(ff, "\n");
+			}
+			break;
+
+	case 2: for(int l=0; l<7; l++){
+				fprintf(ff, "%1i %7.3f %7.3f %7.3f ",l, T_L2[l], T_M87[l], T_SGR_A[l]);
+				if(T_SGR_A[l]>T_SGR_A_max){
+					L=l;
+					T_M87_max =T_M87[l];
+					T_SGR_A_max=T_SGR_A[l];
+					T_L2_max=T_L2[l];
+				}
+				fprintf(ff, "\n");
+			}
+			break;
+
+	case 3: for(int l=0; l<7; l++){
+				fprintf(ff, "%1i %7.3f %7.3f %7.3f ",l, T_L2[l], T_M87[l], T_SGR_A[l]);
+				if(T_L2[l]>T_L2_max){
+					L=l;
+					T_M87_max =T_M87[l];
+					T_SGR_A_max=T_SGR_A[l];
+					T_L2_max=T_L2[l];
+				}
+				fprintf(ff, "\n");
+			}
+			break;
+}
+
+	if(L>=0){
+	   fprintf(ff, "------------------------\n%1i %7.3f %7.3f %7.3f \n", L, T_L2[L], T_M87[L], T_SGR_A[L]);
+	}
+	else{
+	   fprintf(ff, "------------------------\n без улучшения\n");
+	}
+	fclose(ff);
+}
+
+
+
+
+
+/*печать текущего прострела*/
+void correctionL2::print(int L){
+FILE *ff;
+
+
+	ff=fopen("tr_L2.txt", "w");
+	for(int j=0; j<RV_L2[L].size(); j++){
+		fprintf(ff, "%s ", JDToStr(RV_L2[L][j].t, 1));
+		for(int ii=0; ii<3; ii++) fprintf(ff, "%15.8f ", RV_L2[L][j].r[ii]);
+		for(int ii=0; ii<3; ii++) fprintf(ff, "%15.12f ", RV_L2[L][j].v[ii]);
+		for(int ii=0; ii<3; ii++) fprintf(ff, "%15.8f ", RV_J2[L][j].r[ii]);
+		for(int ii=0; ii<3; ii++) fprintf(ff, "%15.12f ", RV_J2[L][j].v[ii]);
+		fprintf(ff, "\n");
+	}
+	fclose(ff);
+
+
+
+	ff=fopen("tr_M87.txt", "w");
+	if(RV_M87[L].size()>0){
+		for(int j=0; j<RV_M87[L].size(); j++){
+			fprintf(ff, "%s ", JDToStr(RV_M87[L][j].t, 1));
+			for(int ii=0; ii<3; ii++) fprintf(ff, "%15.8f ", RV_M87[L][j].r[ii]);
+			for(int ii=0; ii<3; ii++) fprintf(ff, "%15.12f ", RV_M87[L][j].v[ii]);
+			fprintf(ff, "\n");
+		}
+	}
+	fclose(ff);
+
+	ff=fopen("tr_SGR_A.txt", "w");
+	if(RV_SGR_A[L].size()>0){
+		for(int j=0; j<RV_SGR_A[L].size(); j++){
+			fprintf(ff, "%s ", JDToStr(RV_SGR_A[L][j].t, 1));
+			for(int ii=0; ii<3; ii++) fprintf(ff, "%15.8f ", RV_SGR_A[L][j].r[ii]);
+			for(int ii=0; ii<3; ii++) fprintf(ff, "%15.12f ", RV_SGR_A[L][j].v[ii]);
+			fprintf(ff, "\n");
+		}
+		fprintf(ff, "%5.2f", (RV_SGR_A[L][RV_SGR_A[L].size()-1].t-RV_SGR_A[L][0].t)*24);
+	}
+	fclose(ff);
+}
+/*очистка файлов для записи результатов*/
+void correctionL2::clearfile(){
+FILE *ff;
+ff=fopen("calc.txt", "w");
+fclose(ff);
+ff=fopen("tr_full.txt", "w");
+fclose(ff);
+ff=fopen("tr_M87_full.txt", "w");
+fclose(ff);
+ff=fopen("tr_SGR_A_full.txt", "w");
+fclose(ff);
+}
+
+/*печать полного файла расчета*/
+void correctionL2::print(){
+FILE *ff;
+
+
+	ff=fopen("tr_full.txt", "a");
+	for(int j=0; j<RV_L2[0].size(); j++){
+		fprintf(ff, "%s ", JDToStr(RV_L2[0][j].t, 1));
+		for(int ii=0; ii<3; ii++) fprintf(ff, "%15.8f ", RV_L2[0][j].r[ii]);
+		for(int ii=0; ii<3; ii++) fprintf(ff, "%15.12f ", RV_L2[0][j].v[ii]);
+		for(int ii=0; ii<3; ii++) fprintf(ff, "%15.8f ", RV_J2[0][j].r[ii]);
+		for(int ii=0; ii<3; ii++) fprintf(ff, "%15.12f ", RV_J2[0][j].v[ii]);
+		fprintf(ff, "\n");
+	}
+	fclose(ff);
+
+
+
+	ff=fopen("tr_M87_full.txt", "a");
+	if(RV_M87[0].size()>0){
+		for(int j=0; j<RV_M87[0].size(); j++){
+			fprintf(ff, "%s ", JDToStr(RV_M87[0][j].t, 1));
+			for(int ii=0; ii<3; ii++) fprintf(ff, "%15.8f ", RV_M87[0][j].r[ii]);
+			for(int ii=0; ii<3; ii++) fprintf(ff, "%15.12f ", RV_M87[0][j].v[ii]);
+			fprintf(ff, "\n");
+		}
+	}
+	fclose(ff);
+
+	ff=fopen("tr_SGR_A_full.txt", "a");
+	if(RV_SGR_A[0].size()>0){
+		for(int j=0; j<RV_SGR_A[0].size(); j++){
+			fprintf(ff, "%s ", JDToStr(RV_SGR_A[0][j].t, 1));
+			for(int ii=0; ii<3; ii++) fprintf(ff, "%15.8f ", RV_SGR_A[0][j].r[ii]);
+			for(int ii=0; ii<3; ii++) fprintf(ff, "%15.12f ", RV_SGR_A[0][j].v[ii]);
+			fprintf(ff, "\n");
+		}
+		fprintf(ff, "%5.2f", (RV_SGR_A[0][RV_SGR_A[0].size()-1].t-RV_SGR_A[0][0].t)*24);
+	}
+	fclose(ff);
+}
+
+
+/*вычисление трассы наблюдений и запись трас в соответствующие переменные*/
+void correctionL2::basa(chi::integration O, int l){
+
+chi::Vect temp;
+double RA = 3.276086532;    //M87
+double DEC = 0.2162659;
+
+double RA1 = 4.649850637;    //SGR_A
+double DEC1 = -0.506282045;
+
+double basa_M87; 	//текущее значение базы для М87
+double basa_SGR_A;  //текущее значение базы для SGR-A
+double aM=165*dtr;  //максимальный угол между осью Х и направлением на Солнце
+double am=90*dtr;   //минимальный угол между осью Х и направлением на Солнце
+int NT=11,			//Солнце
+	NC=3;           //Земля
+double  r_M87[3],	//орт направления на М87
+		r_SGR_A[3]; //орт направления на SGR-A
+double 	rs[3],       //вектор Земля-Солнце
+		rkas[3],      //вектор КА-Солнце
+		a,          //угол между направлением на источник и на Солнце
+		a_M87,      //угол между направлением на КА и на М87
+		a_SGR_A,    //угол между направлением на КА и на SGR-A
+		basa_min=3000,    //минимальная база
+		basa_max=50000;   //максимальная база
+
+/*получаем орты направления на источники*/
+philamTOxyz(DEC, RA, 1, r_M87[0], r_M87[1], r_M87[2]);
+philamTOxyz(DEC1, RA1,  1, r_SGR_A[0], r_SGR_A[1], r_SGR_A[2]);
+
+
+
+		//сохраняем трассы в J2 и L2
+		RV_J2[l]=O.rv_trace;
+		RV_L2[l]=O.rv_trace_L2;
+		//отчищаем трассы для источников
+		RV_M87[l].clear();
+		RV_SGR_A[l].clear();
+		for(int j=0; j<O.rv_trace.size(); j++){
+
+
+
+			/*определение направления на Солнце*/
+			de405.calculateR(NT, NC, O.rv_trace[j].t, rs);
+			/*вычисление вектора направления КА-Солнце*/
+			for(int i=0; i<3; i++){
+				rkas[i]=rs[i]-O.rv_trace[j].r[i];
+			}
+			/*вычисление угла между направлениями на Солнце и на М87*/
+			a=angle_between_vectors(rkas,r_M87);
+			/*проверка возможности наблюдения (ограничение по Солнцу)*/
+			if(a>am && a<aM){
+				/*вычисление угла между направлением на КА и на М87*/
+				a_M87=angle_between_vectors(O.rv_trace[j].r, r_M87);
+				/*вычисление базы М87*/
+				basa_M87=norm(O.rv_trace[j].r)*sin(a_M87);
+				/*считаем время наблюдения М87*/
+				if( basa_M87>basa_min && basa_M87<basa_max){
+					for(int ii=0; ii<3; ii++){
+						temp.r[ii]=O.rv_trace_L2[j].r[ii];
+						temp.v[ii]=O.rv_trace_L2[j].v[ii];
+					}
+					temp.t=O.rv_trace[j].t;
+					RV_M87[l].push_back(temp);
+				}
+			}
+
+			/*вычисление угла между направлениями на Солнце и на SGR-A*/
+			a=angle_between_vectors(rkas,r_SGR_A);
+			/*проверка возможности наблюдения (ограничение по Солнцу)*/
+			if(a>am && a<aM){
+				/*вычисление угла между направлением на КА и на SGR-A*/
+				a_SGR_A=angle_between_vectors(O.rv_trace[j].r, r_SGR_A);
+				/*вычисление базы SGR-A*/
+				basa_SGR_A=norm(O.rv_trace[j].r)*sin(a_SGR_A);
+				/*считаем время наблюдения SGR-A*/
+				if( basa_SGR_A>basa_min && basa_SGR_A<basa_max){
+					for(int ii=0; ii<3; ii++){
+						temp.r[ii]=O.rv_trace_L2[j].r[ii];
+						temp.v[ii]=O.rv_trace_L2[j].v[ii];
+					}
+					temp.t=O.rv_trace[j].t;
+					RV_SGR_A[l].push_back(temp);
+				}
+			}
+		}
+}
+
+
+
+void correctionL2::corrl2_1(){
+FILE *ff;
+
+	double s[7][3]={0, 0, 0,
+					1, 0, 0,
+					0, 1, 0,
+					0, 0, 1,
+				   -1, 0, 0,
+					0,-1, 0,
+					0, 0,-1};
+
+
+
+
+int K=11;           //тип расчета при прогнозирование движения (запись трассы в пределах ограничений)
+
+
+chi::integration O;
+
+
+double 	r1[3],
+		v1[3],
+		t1,
+		r[3],
+		v[3],
+		t,
+		dv[3]={0},
+		DV=0.01;
+
+
+int q=0, L;
+
+
+double  dT=90,        //интервал прогноза
+		interval=300, //интервал прострела при поиске
+		step=3600;	//шаг расчета
+
+
+
+
+
+clearfile();
+
+//задаем тип интегрирования
+K=11;
+O.setTypeCalculation(K);
+O.setParametrs();
+O.setParametrs(300, step);
+
+
+
+for(int i=0; i<3; i++){
+	v1[i]=v0[i];
+	r1[i]=r0[i];
+}
+t1=t0;
+bool end=false;
+
+
+for(double T=0; T<1000; T+=dT){
+
+end=false;
+O.setParametrs(300, step);
+while(!end){
+	q++;
+	ff=fopen("calc.txt", "a");
+	fprintf(ff, "%03i\n", q);
+	fclose(ff);
+	for(int l=0; l<7; l++){
+		//формируем ну на очередной прострел
+		for(int i=0; i<3; i++){
+			v[i]=v1[i]+dv[i]+DV*s[l][i];
+			r[i]=r1[i];
+		}
+		t=t1;
+		//закладываем начальные параметры
+		O.setNU(r,v,t);
+		//интегрируем
+		O.ABM8();
+		//считаем базы и возможные интервалы наблюдений
+		basa(O, l);
+	}
+	maxt(2, L);
+	ff=fopen("calc.txt", "a");
+	if(L>0){
+	   for(int i=0; i<3; i++) dv[i]+=DV*s[L][i];
+	   fprintf(ff, "%13.10f %13.10f %13.10f\n------------------------\n", dv[0], dv[1], dv[2]);
+	   print(L);
+
+	   if(	RV_M87[L][RV_M87[L].size()-1].t-RV_M87[L][0].t>2  &&
+			RV_SGR_A[L][RV_SGR_A[L].size()-1].t-RV_SGR_A[L][0].t>2) end=true;
+	}
+	else{
+		DV*=0.7;
+		fprintf(ff, "%13.10f\n------------------------\n", DV);
+	}
+	fclose(ff);
+	if(DV<0.0001) end=true;
+
+
+}
+
+
+//формируем ну на очередной прострел
+for(int i=0; i<3; i++) v1[i]=v1[i]+dv[i];
+
+O.setParametrs(dT, step);
+//закладываем начальные параметры
+O.setNU(r1,v1,t1);
+//интегрируем
+O.ABM8();
+basa(O, 0);
+print();
+O.getNU(r1, v1, t1);
+
+}
+}
