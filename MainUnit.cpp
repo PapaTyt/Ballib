@@ -129,13 +129,18 @@ ShowMessage("");
 void __fastcall TForm1::BitBtn2Click(TObject *Sender)
 {
 
+//double  t0=DateTimeToJulianDate(EncodeDateTime(2030, 2, 1, 0, 0, 0, 0)),
+//		r0[3]={-659183.3490256558,  1514125.5247464842,   614206.3570772199},
+//		v0[3]={0.0253602582,       -0.0577662914,        0.1258380499};
 double  t0=DateTimeToJulianDate(EncodeDateTime(2030, 2, 1, 0, 0, 0, 0)),
-		r0[3]={-659183.3490256558,  1514125.5247464842,   614206.3570772199},
-		v0[3]={0.0253602582,       -0.0577662914,        0.1258380499};
-correctoinL2 spm;
+		r0[3]={-1089505.642619,	368067.571422,	443954.564859},
+		v0[3]={-0.358717,	-0.337864,	-0.264400};
+
+
+correctionL2 spm;
 
 spm.setNU(r0, v0, t0);
-spm.corrl2();
+spm.corrl2_1();
 
 ShowMessage("");
 

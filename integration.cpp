@@ -1718,7 +1718,10 @@ Vect temp_L2;
 double r[3];
 double t=t_nu+rv_time.t/86400.;
 
-if(rv_time.t==0) rv_trace.clear();
+if(rv_time.t==0) {
+	rv_trace.clear();
+	rv_trace_L2.clear();
+}
 
 J2000toL2(rv_time.r,  t, temp_L2.r);
 
