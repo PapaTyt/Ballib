@@ -365,7 +365,7 @@ zero.t=2451544.5;
 switch(type){
 	case 1: for(int l=0; l<7; l++){
 				fprintf(ff, "%1i %7.3f %7.3f %7.3f ", l, T_L2[l], T_M87[l], T_SGR_A[l]);
-				if(T_M87[l]>T_M87_max){
+				if(T_M87[l]>T_M87_max && T_L2[l]>180){
 					L=l;
 					T_M87_max =T_M87[l];
 					T_SGR_A_max=T_SGR_A[l];
@@ -377,7 +377,7 @@ switch(type){
 
 	case 2: for(int l=0; l<7; l++){
 				fprintf(ff, "%1i %7.3f %7.3f %7.3f ",l, T_L2[l], T_M87[l], T_SGR_A[l]);
-				if(T_SGR_A[l]>T_SGR_A_max){
+				if(T_SGR_A[l]>T_SGR_A_max && T_L2[l]>160){
 					L=l;
 					T_M87_max =T_M87[l];
 					T_SGR_A_max=T_SGR_A[l];
@@ -616,7 +616,7 @@ FILE *ff;
 
 int K=11;           //тип расчета при прогнозирование движения (запись трассы в пределах ограничений)
 
-
+int type_max[10]={1, 2, 3, 3, 1, 2, 1, 2, 1, 2};
 chi::integration O;
 
 
@@ -657,10 +657,14 @@ for(int i=0; i<3; i++){
 }
 t1=t0;
 bool end=false;
-
+int qr=-1;
 
 for(double T=0; T<1000; T+=dT){
-
+qr++;
+ff=fopen("calc.txt", "a");
+	fprintf(ff, "%03i\n", qr);
+	fclose(ff);
+DV=0.001;
 end=false;
 O.setParametrs(300, step);
 while(!end){
@@ -682,7 +686,7 @@ while(!end){
 		//считаем базы и возможные интервалы наблюдений
 		basa(O, l);
 	}
-	maxt(2, L);
+	maxt(type_max[qr], L);
 	ff=fopen("calc.txt", "a");
 	if(L>0){
 	   for(int i=0; i<3; i++) dv[i]+=DV*s[L][i];
@@ -691,6 +695,7 @@ while(!end){
 
 	   if(	RV_M87[L][RV_M87[L].size()-1].t-RV_M87[L][0].t>2  &&
 			RV_SGR_A[L][RV_SGR_A[L].size()-1].t-RV_SGR_A[L][0].t>2) end=true;
+
 	}
 	else{
 		DV*=0.7;
@@ -701,8 +706,9 @@ while(!end){
 
 
 }
-
-
+ff=fopen("calc.txt", "a");
+fprintf(ff, "-------------------Прогноз на 90 дней------------------------\n");
+fclose(ff);
 //формируем ну на очередной прострел
 for(int i=0; i<3; i++) v1[i]=v1[i]+dv[i];
 
