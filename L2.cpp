@@ -686,7 +686,7 @@ while(!end){
 		//считаем базы и возможные интервалы наблюдений
 		basa(O, l);
 	}
-	maxt(type_max[qr], L);
+	maxt(3/*type_max[qr]*/, L);
 	ff=fopen("calc.txt", "a");
 	if(L>0){
 	   for(int i=0; i<3; i++) dv[i]+=DV*s[L][i];
@@ -708,10 +708,13 @@ while(!end){
 }
 ff=fopen("calc.txt", "a");
 fprintf(ff, "-------------------Прогноз на 90 дней------------------------\n");
-fclose(ff);
+fprintf(ff, "%13.10f %13.10f %13.10f\n", dv[0], dv[1], dv[2]);
+fprintf(ff, "%s %13.10f %13.10f %13.10f %13.10f %13.10f %13.10f\n", JDToStr(t1, 1), r1[0], r1[1], r1[2], v1[0], v1[1], v1[2]);
+
 //формируем ну на очередной прострел
 for(int i=0; i<3; i++) v1[i]=v1[i]+dv[i];
-
+fprintf(ff, "%s %13.10f %13.10f %13.10f %13.10f %13.10f %13.10f\n", JDToStr(t1, 1), r1[0], r1[1], r1[2], v1[0], v1[1], v1[2]);
+fclose(ff);
 O.setParametrs(dT, step);
 //закладываем начальные параметры
 O.setNU(r1,v1,t1);
